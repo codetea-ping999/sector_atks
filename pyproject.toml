@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sector_atks"
+version = "0.1.0"
+description = "Sector-weighted Verified Detection Coverage (VDC) for MITRE ATT&CK"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+sector-atks = "sector_atks.cli:main"
+
+[tool.setuptools]
+packages = ["sector_atks"]
