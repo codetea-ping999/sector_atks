@@ -1,0 +1,305 @@
+group_id,group_name,sector,evidence
+G0004,Ke3chang,civil_society,NGOs
+G0026,APT18,civil_society,human rights
+G0029,Scarlet Mimic,civil_society,activist
+G0038,Stealth Falcon,civil_society,activist
+G0047,Gamaredon Group,civil_society,non-governmental organization
+G0050,APT32,civil_society,dissident
+G0066,Elderwood,civil_society,human rights
+G0125,HAFNIUM,civil_society,NGOs
+G0129,Mustang Panda,civil_society,non-governmental organization
+G1033,Star Blizzard,civil_society,NGO
+G1034,Daggerfly,civil_society,NGO
+G1035,Winter Vivern,civil_society,NGO
+G0001,Axiom,defense,aerospace
+G0004,Ke3chang,defense,military
+G0009,Deep Panda,defense,defense
+G0010,Turla,defense,military
+G0019,Naikon,defense,military
+G0027,Threat Group-3390,defense,aerospace
+G0035,Dragonfly,defense,defense
+G0045,menuPass,defense,defense
+G0047,Gamaredon Group,defense,military
+G0059,Magic Hound,defense,military
+G0065,Leviathan,defense,aerospace
+G0066,Elderwood,defense,defense
+G0069,MuddyWater,defense,defense
+G0073,APT19,defense,defense
+G0076,Thrip,defense,defense contractor
+G0084,Gallmaker,defense,defense
+G0089,The White Company,defense,military
+G0090,WIRTE,defense,military
+G0095,Machete,defense,military
+G0103,Mofang,defense,military
+G0117,Fox Kitten,defense,defense
+G0121,Sidewinder,defense,military
+G0125,HAFNIUM,defense,defense contractor
+G0130,Ajax Security Team,defense,defense
+G0131,Tonto Team,defense,military
+G0134,Transparent Tribe,defense,defense
+G0138,Andariel,defense,military
+G0142,Confucius,defense,military
+G1005,POLONIUM,defense,defense
+G1018,TA2541,defense,aerospace
+G1022,ToddyCat,defense,military
+G1023,APT5,defense,aerospace
+G1028,APT-C-23,defense,military
+G1033,Star Blizzard,defense,defense
+G1048,UNC3886,defense,defense
+G1054,MirrorFace,defense,defense
+G1059,NIMBUS MANTICORE,defense,aerospace
+G0010,Turla,education,education
+G0016,APT29,education,research institut
+G0045,menuPass,education,university
+G0059,Magic Hound,education,academic
+G0065,Leviathan,education,academia
+G0073,APT19,education,education
+G0079,DarkHydrus,education,education
+G0083,SilverTerrier,education,education
+G0087,APT39,education,academic
+G0094,Kimsuky,education,think tank
+G0096,APT41,education,education
+G0122,Silent Librarian,education,universities
+G0125,HAFNIUM,education,education
+G0129,Mustang Panda,education,think tank
+G0131,Tonto Team,education,education
+G0134,Transparent Tribe,education,research organization
+G1004,LAPSUS$,education,education
+G1006,Earth Lusca,education,education
+G1007,Aoqin Dragon,education,education
+G1013,Metador,education,universities
+G1032,INC Ransom,education,education
+G1033,Star Blizzard,education,academic
+G1054,MirrorFace,education,academic
+G0004,Ke3chang,energy,oil
+G0007,APT28,energy,nuclear facilit
+G0027,Threat Group-3390,energy,energy
+G0034,Sandworm Team,energy,electrical compan
+G0045,menuPass,energy,energy
+G0046,FIN7,energy,utilities
+G0049,OilRig,energy,energy
+G0064,APT33,energy,energy
+G0069,MuddyWater,energy,oil
+G0073,APT19,energy,energy
+G0095,Machete,energy,power compan
+G0099,APT-C-36,energy,energy
+G0117,Fox Kitten,energy,oil
+G0131,Tonto Team,energy,energy
+G1001,HEXANE,energy,oil
+G1002,BITTER,energy,energy
+G1004,LAPSUS$,energy,energy
+G1009,Moses Staff,energy,energy
+G0008,Carbanak,finance,financial
+G0009,Deep Panda,finance,financial
+G0018,admin@338,finance,financial
+G0036,GCMAN,finance,banks
+G0045,menuPass,finance,finance
+G0049,OilRig,finance,financial
+G0061,FIN8,finance,insurance
+G0069,MuddyWater,finance,finance
+G0073,APT19,finance,finance
+G0080,Cobalt Group,finance,financial
+G0082,APT38,finance,banks
+G0090,WIRTE,finance,financial
+G0091,Silence,finance,financial
+G0093,GALLIUM,finance,financial
+G0096,APT41,finance,finance
+G0098,BlackTech,finance,financial
+G0099,APT-C-36,finance,financial
+G0105,DarkVishnya,finance,financial
+G0131,Tonto Team,finance,financial
+G0138,Andariel,finance,ATMs
+G1006,Earth Lusca,finance,cryptocurrency
+G1009,Moses Staff,finance,finance
+G1015,Scattered Spider,finance,financial
+G1016,FIN13,finance,financial
+G1039,RedCurl,finance,insurance
+G1049,AppleJeus,finance,cryptocurrency
+G1052,Contagious Interview,finance,cryptocurrency
+G1054,MirrorFace,finance,financial
+G1056,TeamPCP,finance,cryptocurrency
+G0001,Axiom,government,government
+G0004,Ke3chang,government,government
+G0005,APT12,government,government
+G0009,Deep Panda,government,government
+G0010,Turla,government,government
+G0016,APT29,government,government
+G0019,Naikon,government,government
+G0022,APT3,government,political organization
+G0026,APT18,government,government
+G0027,Threat Group-3390,government,government
+G0034,Sandworm Team,government,government
+G0035,Dragonfly,government,government
+G0040,Patchwork,government,diplomat
+G0045,menuPass,government,government
+G0049,OilRig,government,government
+G0050,APT32,government,government
+G0054,Sowbug,government,government
+G0059,Magic Hound,government,government
+G0060,BRONZE BUTLER,government,government
+G0065,Leviathan,government,government
+G0068,PLATINUM,government,government
+G0069,MuddyWater,government,government
+G0077,Leafminer,government,government
+G0078,Gorgon Group,government,government
+G0079,DarkHydrus,government,government
+G0081,Tropic Trooper,government,government
+G0084,Gallmaker,government,government
+G0089,The White Company,government,government
+G0090,WIRTE,government,diplomat
+G0093,GALLIUM,government,government
+G0094,Kimsuky,government,government
+G0095,Machete,government,government
+G0099,APT-C-36,government,government
+G0100,Inception,government,government
+G0103,Mofang,government,government
+G0112,Windshift,government,government
+G0117,Fox Kitten,government,government
+G0121,Sidewinder,government,government
+G0122,Silent Librarian,government,government
+G0126,Higaisa,government,government
+G0129,Mustang Panda,government,government
+G0131,Tonto Team,government,government
+G0133,Nomadic Octopus,government,government
+G0134,Transparent Tribe,government,diplomat
+G0135,BackdoorDiplomacy,government,Ministries
+G0136,IndigoZebra,government,government
+G0138,Andariel,government,government
+G0142,Confucius,government,government
+G0143,Aquatic Panda,government,government
+G1002,BITTER,government,government
+G1003,Ember Bear,government,government
+G1004,LAPSUS$,government,government
+G1006,Earth Lusca,government,government
+G1007,Aoqin Dragon,government,government
+G1008,SideCopy,government,government
+G1009,Moses Staff,government,government
+G1014,LuminousMoth,government,government
+G1019,MoustachedBouncer,government,embassies
+G1021,Cinnamon Tempest,government,government
+G1022,ToddyCat,government,government
+G1033,Star Blizzard,government,government
+G1034,Daggerfly,government,government
+G1035,Winter Vivern,government,government
+G1040,Play,government,government
+G1054,MirrorFace,government,diplomat
+G1055,VOID MANTICORE,government,government
+G0009,Deep Panda,healthcare,healthcare
+G0010,Turla,healthcare,pharmaceutical
+G0026,APT18,healthcare,medical
+G0045,menuPass,healthcare,healthcare
+G0046,FIN7,healthcare,medical
+G0060,BRONZE BUTLER,healthcare,biotechnology
+G0065,Leviathan,healthcare,biomedical
+G0071,Orangeworm,healthcare,healthcare
+G0073,APT19,healthcare,pharmaceutical
+G0081,Tropic Trooper,healthcare,healthcare
+G0085,FIN4,healthcare,healthcare
+G0096,APT41,healthcare,healthcare
+G0102,Wizard Spider,healthcare,hospitals
+G0117,Fox Kitten,healthcare,healthcare
+G0131,Tonto Team,healthcare,healthcare
+G1004,LAPSUS$,healthcare,healthcare
+G1011,EXOTIC LILY,healthcare,healthcare
+G1032,INC Ransom,healthcare,healthcare
+G1040,Play,healthcare,healthcare
+G0001,Axiom,manufacturing,manufactur
+G0026,APT18,manufacturing,manufactur
+G0027,Threat Group-3390,manufacturing,manufactur
+G0035,Dragonfly,manufacturing,industrial
+G0045,menuPass,manufacturing,manufactur
+G0049,OilRig,manufacturing,chemical
+G0060,BRONZE BUTLER,manufacturing,manufactur
+G0061,FIN8,manufacturing,chemical
+G0065,Leviathan,manufacturing,industrial
+G0066,Elderwood,manufacturing,manufactur
+G0073,APT19,manufacturing,manufactur
+G0083,SilverTerrier,manufacturing,manufactur
+G0099,APT-C-36,manufacturing,manufactur
+G0103,Mofang,manufacturing,automobile
+G0117,Fox Kitten,manufacturing,industrial
+G0130,Ajax Security Team,manufacturing,industrial
+G1004,LAPSUS$,manufacturing,manufactur
+G1005,POLONIUM,manufacturing,manufactur
+G1009,Moses Staff,manufacturing,manufactur
+G1015,Scattered Spider,manufacturing,manufactur
+G1018,TA2541,manufacturing,manufactur
+G1032,INC Ransom,manufacturing,industrial
+G1054,MirrorFace,manufacturing,manufactur
+G0001,Axiom,media,media
+G0005,APT12,media,media outlet
+G0038,Stealth Falcon,media,journalist
+G0046,FIN7,media,media
+G0050,APT32,media,journalist
+G0059,Magic Hound,media,journalist
+G0098,BlackTech,media,media
+G1004,LAPSUS$,media,media
+G1006,Earth Lusca,media,media outlet
+G1040,Play,media,media
+G1054,MirrorFace,media,media
+G0037,FIN6,retail_hospitality,point of sale
+G0046,FIN7,retail_hospitality,retail
+G0053,FIN5,retail_hospitality,restaurant
+G0061,FIN8,retail_hospitality,hospitality
+G0087,APT39,retail_hospitality,hospitality
+G0096,APT41,retail_hospitality,retail
+G1015,Scattered Spider,retail_hospitality,hospitality
+G1016,FIN13,retail_hospitality,retail
+G0005,APT12,technology,high-tech
+G0026,APT18,technology,technology
+G0027,Threat Group-3390,technology,technology
+G0045,menuPass,technology,managed IT service provider
+G0046,FIN7,technology,software
+G0061,FIN8,technology,technology
+G0066,Elderwood,technology,IT service
+G0073,APT19,technology,high tech
+G0081,Tropic Trooper,technology,high-tech
+G0083,SilverTerrier,technology,technology
+G0090,WIRTE,technology,technology
+G0096,APT41,technology,technology
+G0114,Chimera,technology,semiconductor
+G0117,Fox Kitten,technology,technology
+G0131,Tonto Team,technology,technology
+G0143,Aquatic Panda,technology,technology
+G1004,LAPSUS$,technology,technology
+G1005,POLONIUM,technology,technology
+G1012,CURIUM,technology,IT service
+G1015,Scattered Spider,technology,technology
+G1048,UNC3886,technology,technology
+G1052,Contagious Interview,technology,software develop
+G0009,Deep Panda,telecommunications,telecom
+G0049,OilRig,telecommunications,telecom
+G0069,MuddyWater,telecommunications,telecom
+G0073,APT19,telecommunications,telecom
+G0076,Thrip,telecommunications,satellite communication
+G0087,APT39,telecommunications,telecom
+G0093,GALLIUM,telecommunications,telecom
+G0095,Machete,telecommunications,telecom
+G0096,APT41,telecommunications,telecom
+G0135,BackdoorDiplomacy,telecommunications,telecom
+G0143,Aquatic Panda,telecommunications,telecom
+G1001,HEXANE,telecommunications,telecom
+G1003,Ember Bear,telecommunications,telecom
+G1004,LAPSUS$,telecommunications,telecom
+G1006,Earth Lusca,telecommunications,telecom
+G1007,Aoqin Dragon,telecommunications,telecom
+G1013,Metador,telecommunications,telecom
+G1015,Scattered Spider,telecommunications,telecom
+G1023,APT5,telecommunications,telecom
+G1034,Daggerfly,telecommunications,telecom
+G1048,UNC3886,telecommunications,telecom
+G1059,NIMBUS MANTICORE,telecommunications,telecom
+G0035,Dragonfly,transportation,aviation
+G0045,menuPass,transportation,maritime
+G0046,FIN7,transportation,transportation
+G0064,APT33,transportation,aviation
+G0065,Leviathan,transportation,aviation
+G0081,Tropic Trooper,transportation,transportation
+G0087,APT39,transportation,travel
+G0114,Chimera,transportation,airline
+G0140,LazyScripter,transportation,airlines
+G1001,HEXANE,transportation,aviation
+G1009,Moses Staff,transportation,travel
+G1018,TA2541,transportation,aviation
+G1039,RedCurl,transportation,travel
+G1059,NIMBUS MANTICORE,transportation,aviation
