@@ -10,4 +10,8 @@ STIX 本体（約 55 MB）は含めていません。`python3 -m sector_atks fet
 
 ## 業種判定の注意
 
-`group_sectors.csv` は、グループ記述のうち「targeted」「against」「sectors」などの標的を表す語より後ろだけを対象に、業種のキーワードを探して付けています。これで「国家安全部に帰属」「軍の部隊」のような帰属の記述や、「financially motivated」のような動機の記述を業種と取り違えにくくしています。それでも誤判定と漏れは残るため、`evidence` 列の語句を見て、必要なら `group_sector_overrides.csv` で直してください。
+`group_sectors.csv` は、グループ記述のうち標的を表す語（targeted, against, sectors など）より後ろで、帰属・動機の語句（attributed, sponsored, motivated など）より前の部分だけを対象に、業種のキーワードを探して付けています。手順は [docs/method.md](../docs/method.md) の 1 節にあります。
+
+根拠は `evidence`（一致した語句）、`sentence`（その文の部分）、`source`（ATT&CK のページ）の各列で確認できます。誤りは `group_sector_overrides.csv` で直します。現在の上書きは 2 件で、抜き取り監査で見つかった誤りです（method.md の 4.1 節）。
+
+業種を付けられなかったグループは `untagged_groups.csv`、業種ごとのデータの質（少数フラグ、ブートストラップ安定度）は `sector_summary.csv` にあります。

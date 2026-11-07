@@ -17,7 +17,7 @@
 |---|---|---|---|
 | DeTT&CT（rabobank-cdc） | 直接確認（README） | データソースの質、可視性、検知を YAML で採点し、Navigator レイヤーで可視化 | 採点が自己評価である点を VDC は実検証で置き換える。可視性と検知を分けて見る考え方は補助指標「可視性」として取り入れた |
 | CTID Summiting the Pyramid と Detection Coverage Calculator | 直接確認（docs と DCC の README） | 検知の頑健性を段階で評価する。DCC は Sigma ルールを読み、頑健性と精度を採点する | D_t は「手順を変えても検知できるか」を手順の数で近似している。DCC の頑健性スコアで D_t を補正するのが次の拡張候補 |
-| ATT&CK Navigator のレイヤー形式 | 既知資料 | 技術ごとのスコアとコメントを持つ JSON | `--layer` で D × F をスコアにしたレイヤーを出力する |
+| ATT&CK Navigator のレイヤー形式 | 既知資料 | 技術ごとのスコアとコメントを持つ JSON | `--layer` で V（鮮度込みの検知率）をスコアにしたレイヤーを出力する |
 | Sigma（SigmaHQ）／pySigma | 既知資料 | 製品に依存しない検知ルール形式と変換器 | 公開データセットに公開ルールを当てて D_t を求める机上評価で使う想定 |
 | MITRE CAR、D3FEND | 既知資料 | 分析の例と防御技術の知識ベース | 今回は使っていない。D3FEND は「ギャップをどう埋めるか」の提案に使える |
 | Atomic Red Team | 既知資料 | ATT&CK に対応づけた検証テストのライブラリ | 参照のみ。テスト内容はこのリポジトリに含めない。組織が使う場合は procedure_id に社内試験の ID を入れれば記録できる |

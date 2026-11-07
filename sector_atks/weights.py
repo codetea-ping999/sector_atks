@@ -20,6 +20,8 @@ normalised so that the weights sum to 1.
 from __future__ import annotations
 
 import csv
+import random
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -47,7 +49,9 @@ def group_techniques(attack: Attack, subtechniques: bool) -> dict[str, set[str]]
     return {gid: {parent_id(t) for t in g.techniques} for gid, g in attack.groups.items()}
 
 
-def _shares(group_ids: set[str], usage: dict[str, set[str]]) -> dict[str, tuple[int, float]]:
+def _shares(group_ids: Iterable[str], usage: dict[str, set[str]]) -> dict[str, tuple[int, float]]:
+    """Technique -> (groups using it, share). Repeated ids count again (for bootstrap samples)."""
+    group_ids = list(group_ids)
     counts: dict[str, int] = {}
     for gid in group_ids:
         for t in usage.get(gid, ()):
@@ -66,7 +70,7 @@ def load_prevalence(path: Path) -> dict[str, float]:
 
 def sector_weights(
     attack: Attack,
-    sector_groups: set[str],
+    sector_groups: Iterable[str],
     top_n: int = 20,
     subtechniques: bool = False,
     prevalence: dict[str, float] | None = None,
@@ -123,3 +127,33 @@ def write_weights(rows: list[WeightRow], path: Path) -> None:
                 f"{r.lift:.3f}", f"{r.prevalence:.4f}", f"{r.score:.4f}",
                 "" if r.weight is None else f"{r.weight:.4f}",
             ])
+
+
+# Sectors with fewer tagged groups than this are flagged as unstable.
+MIN_GROUPS = 15
+
+
+def top_set(rows: list[WeightRow]) -> set[str]:
+    return {r.technique_id for r in rows if r.weight is not None}
+
+
+def jaccard(a: set[str], b: set[str]) -> float:
+    return len(a & b) / len(a | b) if a | b else 1.0
+
+
+def bootstrap_stability(
+    attack: Attack, sector_groups: set[str], samples: int = 200, seed: int = 0, **kwargs
+) -> float:
+    """Mean Jaccard overlap between the top-N set and the top-N sets built from
+    bootstrap resamples (with replacement) of the sector's groups. 1.0 means the
+    priority set does not depend on which particular groups were tagged."""
+    groups = sorted(sector_groups)
+    if not groups:
+        return 0.0
+    base = top_set(sector_weights(attack, groups, **kwargs))
+    rng = random.Random(seed)
+    total = 0.0
+    for _ in range(samples):
+        sample = [rng.choice(groups) for _ in groups]
+        total += jaccard(base, top_set(sector_weights(attack, sample, **kwargs)))
+    return total / samples

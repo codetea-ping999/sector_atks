@@ -59,7 +59,7 @@ SECTORS: dict[str, tuple[str, str]] = {
     ),
     "manufacturing": (
         "製造",
-        r"\bmanufactur|\bindustrial\b|\bautomotive\b|\bautomobile\b|\bchemical\b" + _AS_VICTIM,
+        r"\bmanufactur|\bindustrial\b(?! base)|\bautomotive\b|\bautomobile\b|\bchemical\b" + _AS_VICTIM,
     ),
     "education": (
         "教育・研究",
@@ -93,6 +93,15 @@ _CUE = re.compile(
     r"|\bbreach|\bspanning\b|\bsectors?\b|\bindustries\b",
     re.IGNORECASE,
 )
+# Phrases that start an attribution or motive clause. A sentence is cut at
+# each of them, so "attacked banks and is attributed to a Ministry of State
+# Security" yields "attacked banks and is" but not the Ministry.
+_NOT_VICTIM = re.compile(
+    r"\battribut|\baffiliat|\b(is|are|was|were|been) associated with\b|\bon behalf of\b|\bsponsor|\blinked to\b"
+    r"|\bsubordinate\b|\b(believed|suspected|assessed|thought) to\b|\bmotivat"
+    r"|\boperat(es|ing|ed) (out of|from|under)\b|\bpart of\b|\bin support of\b",
+    re.IGNORECASE,
+)
 _SENTENCE = re.compile(r"(?<=[.!?])\s+")
 _CITATION = re.compile(r"\(Citation:[^)]*\)")
 _LINK = re.compile(r"\[([^\]]+)\]\([^)]*\)")
@@ -104,6 +113,8 @@ class SectorTag:
     group_name: str
     sector: str
     evidence: str  # matched phrase, or "manual" for an override
+    sentence: str = ""  # the victimology text the phrase was found in
+    source: str = ""  # ATT&CK page of the group
 
 
 def _clean(text: str) -> str:
@@ -111,12 +122,15 @@ def _clean(text: str) -> str:
 
 
 def victimology(description: str) -> list[str]:
-    """The parts of each sentence that follow a targeting cue."""
+    """Text that follows a targeting cue, up to the next attribution or motive clause."""
     spans = []
     for sentence in _SENTENCE.split(_clean(description)):
-        cue = _CUE.search(sentence)
-        if cue:
-            spans.append(sentence[cue.start():])
+        cuts = [m.start() for m in _NOT_VICTIM.finditer(sentence)]
+        for start, end in zip([0] + cuts, cuts + [len(sentence)]):
+            segment = sentence[start:end]
+            cue = _CUE.search(segment)
+            if cue:
+                spans.append(segment[cue.start():].strip())
     return spans
 
 
@@ -127,7 +141,12 @@ def tag_group(group: Group) -> list[SectorTag]:
         for span in spans:
             m = pattern.search(span)
             if m:
-                tags.append(SectorTag(group.id, group.name, sector, m.group(0)))
+                tags.append(
+                    SectorTag(
+                        group.id, group.name, sector, m.group(0), span,
+                        f"https://attack.mitre.org/groups/{group.id}/",
+                    )
+                )
                 break
     return tags
 
@@ -152,7 +171,10 @@ def tag_groups(
         if action == "remove":
             tags.pop((gid, sector), None)
         elif gid in groups:
-            tags[(gid, sector)] = SectorTag(gid, groups[gid].name, sector, "manual")
+            tags[(gid, sector)] = SectorTag(
+                gid, groups[gid].name, sector, "manual", "",
+                f"https://attack.mitre.org/groups/{gid}/",
+            )
     return sorted(tags.values(), key=lambda t: (t.sector, t.group_id))
 
 

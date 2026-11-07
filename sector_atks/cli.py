@@ -42,23 +42,49 @@ def cmd_build_weights(args: argparse.Namespace) -> None:
 
     with open(out / "group_sectors.csv", "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["group_id", "group_name", "sector", "evidence"])
+        w.writerow(["group_id", "group_name", "sector", "evidence", "sentence", "source"])
         for t in tags:
-            w.writerow([t.group_id, t.group_name, t.sector, t.evidence])
+            w.writerow([t.group_id, t.group_name, t.sector, t.evidence, t.sentence, t.source])
+
+    tagged = {t.group_id for t in tags}
+    untagged = sorted(set(att.groups) - tagged)
+    with open(out / "untagged_groups.csv", "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["group_id", "group_name", "techniques", "source"])
+        for gid in untagged:
+            g = att.groups[gid]
+            w.writerow([gid, g.name, len(g.techniques), f"https://attack.mitre.org/groups/{gid}/"])
+
+    opts = dict(
+        top_n=args.top,
+        subtechniques=args.subtechniques,
+        prevalence=prevalence,
+        beta=args.beta,
+        exclude_tactics=frozenset() if args.include_pre_compromise else weights.PRE_COMPROMISE,
+    )
+    baseline = weights.sector_weights(att, set(att.groups), **opts)
+    weights.write_weights(baseline, out / "weights" / "_all_groups.csv")
+    base_top = weights.top_set(baseline)
+    tagged_top = weights.top_set(weights.sector_weights(att, tagged, **opts))
+    untagged_top = weights.top_set(weights.sector_weights(att, set(untagged), **opts))
 
     summary = []
     for sector, gids in by_sector.items():
-        rows = weights.sector_weights(
-            att, gids, args.top, args.subtechniques, prevalence, args.beta,
-            frozenset() if args.include_pre_compromise else weights.PRE_COMPROMISE,
-        )
+        rows = weights.sector_weights(att, gids, **opts)
         weights.write_weights(rows, out / "weights" / f"{sector}.csv")
         top = ", ".join(r.technique_id for r in rows[:5])
-        summary.append([sector, sectors.SECTORS[sector][0], len(gids), len(rows), top])
+        summary.append([
+            sector, sectors.SECTORS[sector][0], len(gids),
+            "yes" if len(gids) < weights.MIN_GROUPS else "no",
+            f"{weights.jaccard(weights.top_set(rows), base_top):.2f}",
+            f"{weights.bootstrap_stability(att, gids, **opts):.2f}",
+            len(rows), top,
+        ])
 
     with open(out / "sector_summary.csv", "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["sector", "label_ja", "groups", "techniques", "top5"])
+        w.writerow(["sector", "label_ja", "groups", "low_n", "overlap_with_all_groups",
+                    "bootstrap_stability", "techniques", "top5"])
         w.writerows(summary)
 
     with open(out / "log_sources.csv", "w", encoding="utf-8", newline="") as f:
@@ -71,7 +97,10 @@ def cmd_build_weights(args: argparse.Namespace) -> None:
         "attack_version": att.version,
         "attack_modified": att.modified,
         "groups": len(att.groups),
-        "groups_tagged": len({t.group_id for t in tags}),
+        "groups_tagged": len(tagged),
+        "groups_untagged": len(untagged),
+        "untagged_vs_tagged_top_overlap": round(weights.jaccard(tagged_top, untagged_top), 3),
+        "min_groups_for_stable_sector": weights.MIN_GROUPS,
         "top_n": args.top,
         "subtechniques": args.subtechniques,
         "include_campaigns": not args.no_campaigns,
@@ -81,7 +110,8 @@ def cmd_build_weights(args: argparse.Namespace) -> None:
     }
     vdc.write_json(meta, out / "build_info.json")
     for row in summary:
-        print(f"{row[0]:<20} groups={row[2]:<3} techniques={row[3]:<4} top5={row[4]}")
+        print(f"{row[0]:<20} groups={row[2]:<3} low_n={row[3]:<3} overlap={row[4]} "
+              f"stability={row[5]} top5={row[7]}")
     print(f"ATT&CK v{att.version}: wrote {out}")
 
 
@@ -96,7 +126,7 @@ def cmd_vdc(args: argparse.Namespace) -> None:
         half_life=args.half_life,
         claimed=vdc.load_claimed(Path(args.claimed)) if args.claimed else None,
         previous_as_of=date.fromisoformat(args.previous_as_of) if args.previous_as_of else None,
-        prevented_counts=not args.exclude_prevented,
+        counts_prevented=args.count_prevented,
     )
     print(vdc.format_text(report))
     if args.json:
@@ -143,8 +173,8 @@ def build_parser() -> argparse.ArgumentParser:
     v.add_argument("--freshness", choices=["step", "exp"], default="step")
     v.add_argument("--window", type=int, default=90, help="days for step freshness")
     v.add_argument("--half-life", type=int, default=90, help="days for exp freshness")
-    v.add_argument("--exclude-prevented", action="store_true",
-                   help="do not count prevented-without-alert as detected")
+    v.add_argument("--count-prevented", action="store_true",
+                   help="also count prevention without an alert as detected (default: alerts only)")
     v.add_argument("--json", help="write the full report as JSON")
     v.add_argument("--layer", help="write an ATT&CK Navigator layer")
     v.add_argument("--layer-name", default="Verified Detection Coverage")

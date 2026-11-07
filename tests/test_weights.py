@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from sector_atks import sectors, weights
-from sector_atks.attack import load_attack
+from sector_atks.attack import Group, load_attack
 
 
 def _ref(eid):
@@ -84,6 +84,35 @@ class WeightsTest(unittest.TestCase):
         self.assertNotIn(("G0002", "government"), tags)  # "attributed to a Ministry"
         self.assertNotIn(("G0003", "finance"), tags)  # "financially motivated"
         self.assertIn(("G0003", "retail_hospitality"), tags)
+
+    def test_same_sentence_attribution_and_motive(self):
+        cases = {
+            "The group attacked banks and is attributed to a Ministry of State Security.":
+                {"finance"},
+            "X is a state-sponsored group that targets hospitals and is linked to the military.":
+                {"healthcare"},
+            "X is attributed to the military, and has targeted universities.": {"education"},
+            "X has focused on targets associated with governments in Asia.": {"government"},
+            "X is financially motivated and targets hotels.": {"retail_hospitality"},
+            "X has targeted the US defense industrial base.": {"defense"},
+            "X uses social media accounts for phishing.": set(),
+        }
+        for text, expected in cases.items():
+            with self.subTest(text=text):
+                g = Group("G9999", "X", [], text)
+                self.assertEqual({t.sector for t in sectors.tag_group(g)}, expected)
+
+    def test_tags_keep_evidence_sentence_and_source(self):
+        (tag,) = [t for t in sectors.tag_group(self.attack.groups["G0002"])]
+        self.assertIn("telecommunications companies", tag.sentence)
+        self.assertEqual(tag.source, "https://attack.mitre.org/groups/G0002/")
+
+    def test_bootstrap_stability(self):
+        stable = weights.bootstrap_stability(self.attack, {"G0001", "G0002"}, samples=20, top_n=1)
+        self.assertGreater(stable, 0.0)
+        self.assertLessEqual(stable, 1.0)
+        self.assertEqual(weights.bootstrap_stability(self.attack, set()), 0.0)
+        self.assertEqual(weights.jaccard({"a"}, {"a", "b"}), 0.5)
 
     def test_overrides(self):
         tags = sectors.tag_groups(
