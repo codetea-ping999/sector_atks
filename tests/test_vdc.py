@@ -3,9 +3,16 @@ import unittest
 from datetime import date
 from pathlib import Path
 
-from sector_atks import vdc
+from sector_atks import engagement, vdc
 
 EXAMPLE = Path(__file__).resolve().parent.parent / "examples" / "fictional_org"
+
+
+def V(*args, **kwargs):
+    """A validation record with evidence attached (event id and verifier)."""
+    kwargs.setdefault("event_id", "EVT-1")
+    kwargs.setdefault("verifier", "tester")
+    return vdc.Validation(*args, **kwargs)
 
 
 class FictionalOrgTest(unittest.TestCase):
@@ -71,8 +78,8 @@ class UnitTest(unittest.TestCase):
     def test_freshness_is_per_procedure(self):
         # An expired success must not be refreshed by a recent failure of another procedure.
         v = [
-            vdc.Validation("T1059", "a", date(2026, 6, 28), "detected"),  # 120 days old
-            vdc.Validation("T1059", "b", self.as_of, "none"),
+            V("T1059", "a", date(2026, 6, 28), "detected"),  # 120 days old
+            V("T1059", "b", self.as_of, "none"),
         ]
         r = vdc.compute(self.weights, v, self.as_of)
         t = next(x for x in r.techniques if x.technique_id == "T1059")
@@ -83,8 +90,8 @@ class UnitTest(unittest.TestCase):
 
     def test_mixed_freshness_counts_only_fresh_successes(self):
         v = [
-            vdc.Validation("T1059", "a", date(2026, 6, 28), "detected"),  # expired
-            vdc.Validation("T1059", "b", date(2026, 10, 1), "detected"),
+            V("T1059", "a", date(2026, 6, 28), "detected"),  # expired
+            V("T1059", "b", date(2026, 10, 1), "detected"),
         ]
         r = vdc.compute(self.weights, v, self.as_of)
         self.assertAlmostEqual(r.vdc, 0.5 * 0.5)
@@ -93,7 +100,7 @@ class UnitTest(unittest.TestCase):
         self.assertAlmostEqual(r.vdc, expected)
 
     def test_subtechnique_rolls_up_and_untested_is_zero(self):
-        v = [vdc.Validation("T1059.001", "a", date(2026, 10, 1), "detected")]
+        v = [V("T1059.001", "a", date(2026, 10, 1), "detected")]
         r = vdc.compute(self.weights, v, as_of=self.as_of)
         by_id = {t.technique_id: t for t in r.techniques}
         self.assertEqual(by_id["T1059"].procedures, 1)
@@ -101,7 +108,7 @@ class UnitTest(unittest.TestCase):
         self.assertAlmostEqual(r.vdc, 0.5)
 
     def test_prevention_without_alert_or_log_is_not_detection_or_visibility(self):
-        v = [vdc.Validation("T1059", "a", date(2026, 10, 1), "prevented")]
+        v = [V("T1059", "a", date(2026, 10, 1), "prevented")]
         r = vdc.compute(self.weights, v, self.as_of)
         t = next(x for x in r.techniques if x.technique_id == "T1059")
         self.assertEqual((t.detection_rate, t.prevention_rate, t.log_rate), (0.0, 1.0, 0.0))
@@ -109,10 +116,10 @@ class UnitTest(unittest.TestCase):
         self.assertAlmostEqual(vdc.compute(self.weights, v, self.as_of, counts_prevented=True).vdc, 0.5)
 
     def test_explicit_flags_override_outcome(self):
-        v = [vdc.Validation("T1059", "a", date(2026, 10, 1), "prevented", alerted=True, logged=True)]
+        v = [V("T1059", "a", date(2026, 10, 1), "prevented", alerted=True, logged=True)]
         t = next(x for x in vdc.compute(self.weights, v, self.as_of).techniques if x.technique_id == "T1059")
         self.assertEqual((t.detection_rate, t.prevention_rate, t.log_rate), (1.0, 1.0, 1.0))
-        v = [vdc.Validation("T1059", "a", date(2026, 10, 1), "detected", logged=False)]
+        v = [V("T1059", "a", date(2026, 10, 1), "detected", logged=False)]
         t = next(x for x in vdc.compute(self.weights, v, self.as_of).techniques if x.technique_id == "T1059")
         self.assertEqual((t.detection_rate, t.log_rate), (1.0, 0.0))
 
@@ -132,8 +139,71 @@ class UnitTest(unittest.TestCase):
                 vdc.load_validations(path)
 
     def test_future_records_are_ignored(self):
-        v = [vdc.Validation("T1059", "a", date(2026, 11, 1), "detected")]
+        v = [V("T1059", "a", date(2026, 11, 1), "detected")]
         self.assertEqual(vdc.compute(self.weights, v, self.as_of).vdc, 0.0)
+
+
+class EvidencePlanFreshnessTest(unittest.TestCase):
+    weights = {"T1059": ("Command and Scripting Interpreter", 0.5), "T1078": ("Valid Accounts", 0.5)}
+    as_of = date(2026, 10, 26)
+
+    def test_alert_without_evidence_is_not_counted(self):
+        bare = [vdc.Validation("T1059", "a", date(2026, 10, 1), "detected")]
+        r = vdc.compute(self.weights, bare, self.as_of)
+        self.assertEqual(r.vdc, 0.0)
+        self.assertEqual(r.unverified, 1)
+        no_verifier = [vdc.Validation("T1059", "a", date(2026, 10, 1), "detected", event_id="E1")]
+        self.assertEqual(vdc.compute(self.weights, no_verifier, self.as_of).vdc, 0.0)
+        uri = [vdc.Validation("T1059", "a", date(2026, 10, 1), "detected",
+                              evidence_uri="https://siem/x", verifier="v")]
+        self.assertAlmostEqual(vdc.compute(self.weights, uri, self.as_of).vdc, 0.5)
+        self.assertAlmostEqual(vdc.compute(self.weights, bare, self.as_of, requires_evidence=False).vdc, 0.5)
+
+    def test_plan_counts_untested_procedures_as_misses(self):
+        plan = [engagement.PlannedProcedure("S", 1, "T1059", p, "") for p in ("a", "b", "c", "d")]
+        v = [V("T1059", "a", date(2026, 10, 1), "detected")]
+        r = vdc.compute(self.weights, v, self.as_of)
+        self.assertAlmostEqual(r.vdc, 0.5)  # one easy procedure would score 100% without a plan
+        r = vdc.compute(self.weights, v, self.as_of, plan=plan)
+        t = next(x for x in r.techniques if x.technique_id == "T1059")
+        self.assertEqual((t.planned, t.executed_planned, t.unplanned), (4, 1, 0))
+        self.assertAlmostEqual(t.execution_rate, 0.25)
+        self.assertAlmostEqual(t.verified_rate, 0.25)
+        self.assertAlmostEqual(r.vdc, 0.125)
+        self.assertAlmostEqual(r.execution_rate, 0.25)
+
+    def test_unplanned_runs_are_kept_in_the_denominator(self):
+        plan = [engagement.PlannedProcedure("S", 1, "T1059", "a", "")]
+        v = [V("T1059", "a", date(2026, 10, 1), "detected"), V("T1059", "x", date(2026, 10, 1), "none")]
+        t = next(x for x in vdc.compute(self.weights, v, self.as_of, plan=plan).techniques
+                 if x.technique_id == "T1059")
+        self.assertEqual((t.planned, t.unplanned), (1, 1))
+        self.assertAlmostEqual(t.verified_rate, 0.5)
+
+    def test_freshness_debt_is_separate_from_regression(self):
+        v = [V("T1059", "a", date(2026, 6, 1), "detected")]
+        r = vdc.compute(self.weights, v, self.as_of, previous_as_of=date(2026, 7, 1))
+        self.assertEqual(r.regression_rate, 0.0)  # capability did not change
+        self.assertAlmostEqual(r.vdc_previous, 0.5)
+        self.assertEqual(r.vdc, 0.0)
+        self.assertAlmostEqual(r.freshness_debt, 0.5)  # but the verification expired
+        self.assertEqual(r.freshness_debt_previous, 0.0)
+
+    def test_invalid_freshness_parameters(self):
+        for kwargs in ({"mode": "exp", "half_life": 0}, {"mode": "exp", "half_life": -5},
+                       {"window": -1}, {"mode": "linear"}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                vdc.compute(self.weights, [], self.as_of, **kwargs)
+
+    def test_example_plan(self):
+        r = vdc.compute(
+            vdc.load_weights(EXAMPLE / "weights.csv"),
+            vdc.load_validations(EXAMPLE / "validations.csv"),
+            as_of=self.as_of,
+            plan=engagement.load_plan(EXAMPLE / "plan.csv"),
+        )
+        self.assertAlmostEqual(r.vdc, 0.475)
+        self.assertAlmostEqual(r.execution_rate, 18 / 20)
 
 
 class WeightValidationTest(unittest.TestCase):
@@ -159,7 +229,7 @@ class WeightValidationTest(unittest.TestCase):
     def test_normalises_and_bounds_result(self):
         w = self._load("T1059,a,3\nT1078,b,1\n")
         self.assertAlmostEqual(w["T1059"][1], 0.75)
-        v = [vdc.Validation(t, "a", date(2026, 10, 1), "detected") for t in w]
+        v = [V(t, "a", date(2026, 10, 1), "detected") for t in w]
         self.assertAlmostEqual(vdc.compute(w, v, date(2026, 10, 26)).vdc, 1.0)
 
     def test_compute_rejects_unnormalised_weights(self):

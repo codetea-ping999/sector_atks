@@ -1,0 +1,20 @@
+{
+  "engagement_id": "LAB-2026-11",
+  "objective": "Verify detection of the finance-sector priority techniques in the isolated purple-team lab",
+  "authorized_by": "CISO (fictional)",
+  "authorization_ref": "APPROVAL-2026-041",
+  "environment": "isolated-lab",
+  "scope": {
+    "hosts": ["lab-ws01", "lab-ws02", "lab-dc01"],
+    "networks": ["10.99.0.0/24"]
+  },
+  "window": {"start": "2026-11-02T00:00:00Z", "end": "2026-11-06T23:59:59Z"},
+  "stop_conditions": [
+    "Any activity observed outside the scoped hosts or network",
+    "Unexpected impact on lab services shared with other teams",
+    "Request to stop from the blue team lead or the authorizer"
+  ],
+  "emergency_contact": "purple-team-lead (fictional)",
+  "log_retention_days": 180,
+  "tools": ["CTID micro emulation plans", "internal test cases"]
+}

@@ -1,0 +1,5 @@
+event_id,rule_id,timestamp,host,technique_ids,uri,source
+A-9001,SIGMA-proc-creation-01,2026-11-03T01:02:10Z,lab-ws01,T1059.001,https://siem.lab.example/alerts/A-9001,siem
+A-9002,EDR-cred-access-07,2026-11-03T03:01:00Z,lab-ws02,T1003.001,https://edr.lab.example/alerts/A-9002,edr
+A-9003,SIGMA-log-clear-02,2026-11-04T01:03:00Z,lab-dc01,T1070.001,https://siem.lab.example/alerts/A-9003,siem
+A-9004,SIGMA-noise-99,2026-11-03T01:31:00Z,lab-ws01,T1105,https://siem.lab.example/alerts/A-9004,siem

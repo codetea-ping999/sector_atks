@@ -21,11 +21,18 @@ V_t = (1 / n_t) × Σ_p ( d_p × f_p )          （p は技術 t で試した手
 
 > **注意**：この数値は研究用の試作です。業種の推定や重みには不確かさがあり（[docs/method.md](docs/method.md) の 4〜5 節）、セキュリティ上の意思決定の確定指標としては使わないでください。
 
-定義の背景は研究ノート `06_検証済み検知カバレッジ.md` にあります。手法の詳細は [docs/method.md](docs/method.md)、参考にしたリポジトリと文献は [docs/references.md](docs/references.md) を見てください。
+定義の背景は研究ノート `06_検証済み検知カバレッジ.md` にあります。詳しい資料は次のとおりです。
+- 手法：[docs/method.md](docs/method.md)
+- レッドチーム活動との連携（交戦規定・検証計画・証跡の照合）：[docs/redteam_integration.md](docs/redteam_integration.md)
+- 参考にしたリポジトリと文献：[docs/references.md](docs/references.md)
 
 ## 範囲
 
-このリポジトリは防御側の測定に限ります。攻撃の手順、攻撃コード、ペイロードは含めず、検証結果も「どの技術のどのバリエーションを、いつ試し、防御側がどう反応したか」だけを記録します。検証そのものは、組織が許可した範囲で既存の手段（パープルチーム演習、BAS、記録済みテレメトリへのルール適用など）で行う前提です。
+このリポジトリは攻撃を実行しません。攻撃の手順、攻撃コード、ペイロードは含めず、検証結果も「どの技術のどのバリエーションを、いつ試し、防御側がどう反応したか」だけを記録します。検証そのものは、権限を持つチームが交戦規定（RoE）の範囲内で、既存のツール（CTID のエミュレーション計画、CALDERA、Atomic Red Team など）を使って行う前提です。sector_atks が受け持つのは次の部分です。
+- 脅威に基づく技術の選定
+- 検証計画と RoE の検査
+- 実行記録と防御側の証跡の突合
+- 結果の集計
 
 ## 使い方
 
@@ -45,7 +52,20 @@ python3 -m sector_atks vdc \
   --validations あなたの検証記録.csv --as-of 2026-10-26 \
   --json out/report.json --layer out/layer.json --attack-version 20
 
-# 3. 重みを作り直す（ATT&CK の新版が出たとき）
+# 3. 隔離ラボでの検証結果を証跡つきで集計する（架空の例）
+python3 -m sector_atks check-roe examples/lab_engagement/roe.json
+python3 -m sector_atks match-evidence --roe examples/lab_engagement/roe.json \
+  --runs examples/lab_engagement/runs.csv --alerts examples/lab_engagement/alerts.csv \
+  --logs examples/lab_engagement/logs.csv --verifier blue-lead -o out/lab_validations.csv
+#   （例では範囲外ホストの実行 R-006 を除外して終了コード 1 を返す）
+python3 -m sector_atks vdc --weights examples/lab_engagement/weights.csv \
+  --validations out/lab_validations.csv --plan examples/lab_engagement/plan.csv --as-of 2026-11-07
+
+# 4. 業種の上位技術に対応する公開エミュレーション計画を一覧にする
+python3 -m sector_atks plan-candidates --weights data/attack-v20.0/weights/finance.csv \
+  --group-sectors data/attack-v20.0/group_sectors.csv --sector finance
+
+# 5. 重みを作り直す（ATT&CK の新版が出たとき）
 python3 -m sector_atks fetch-attack --version 20.0 -o cache/enterprise-attack.json
 python3 -m sector_atks build-weights --stix cache/enterprise-attack.json \
   --out-dir data/attack-v20.0 --overrides data/group_sector_overrides.csv
@@ -53,12 +73,13 @@ python3 -m sector_atks build-weights --stix cache/enterprise-attack.json \
 
 出力されるもの：
 
-- VDC、自己申告カバレッジとの差（申告ギャップ）、回帰率、改善速度（失敗した手順が検知できるようになるまでの平均日数）
-- 検知率・防御率・ログ率（可視性）を別々に集計した値
+- VDC、検証計画の実施率、自己申告カバレッジとの差（申告ギャップ）
+- 回帰率（検知能力の低下）と鮮度の負債（検証の失効）を別々に表示した値、改善速度（失敗した手順が検知できるようになるまでの平均日数）
+- 検知率・防御率・ログ率（可視性）を別々に集計した値と、証跡がないため数えなかった件数
 - 優先度順の技術一覧（残り = w × (1 − V) の大きい順。どこから直すと VDC が最も上がるか）
 - `--layer` で ATT&CK Navigator のレイヤー（スコア = V）
 
-防御されたがアラートが出なかった結果も検知に数えたい場合は `--count-prevented` を付けます。
+既定では、証跡（event_id か evidence_uri）と確認者（verifier）のそろったアラートだけを検知に数えます。防御されたがアラートが出なかった結果も数えるには `--count-prevented` を、自己申告の結果も数えるには `--allow-unverified` を付けます。検証計画（`--plan`）を渡すと、未実施の計画手順を未検知として数えます。
 
 ### 入力ファイルの形式
 
@@ -72,6 +93,7 @@ python3 -m sector_atks build-weights --stix cache/enterprise-attack.json \
 | outcome | `prevented`（防御された）／`detected`（検知された）／`logged`（ログのみ）／`none`（ログなし） |
 | notes | 任意のメモ |
 | prevented, alerted, logged | 任意。`true`／`false`。防御・アラート・ログの有無を個別に記録する。空欄なら outcome から決まる |
+| run_id, rule_id, event_id, evidence_uri, verifier | 証跡。`match-evidence` が埋める。event_id か evidence_uri と、verifier がないと検知に数えない |
 
 outcome から決まる既定値は次のとおりです。`prevented` はアラートもログも「なし」として扱うので、実際にあった場合は列で明示してください。
 

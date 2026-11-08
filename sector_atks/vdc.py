@@ -19,6 +19,13 @@ blocked action may leave neither an alert nor a log. The ``outcome`` column
 gives defaults for those flags using the four classes from the purple-team
 notes: prevented (防御された), detected (検知された), logged (ログのみ),
 none (ログなし).
+
+An alert or prevention only counts when it is backed by evidence: an event id
+or evidence URI from the defensive tool, plus the person who checked it
+(``verifier``). evidence.py fills these fields by matching run records with
+SIEM/EDR exports. When a test plan is given, n_t is the number of planned
+procedures (plus any extra ones that were run), so a technique cannot reach
+100% by running a single easy procedure.
 """
 
 from __future__ import annotations
@@ -31,6 +38,7 @@ from datetime import date
 from pathlib import Path
 
 from .attack import parent_id
+from .engagement import PlannedProcedure
 
 OUTCOMES = {
     "prevented": "防御された",
@@ -61,6 +69,14 @@ class Validation:
     prevented: bool | None = None
     alerted: bool | None = None
     logged: bool | None = None
+    run_id: str = ""
+    rule_id: str = ""
+    event_id: str = ""
+    evidence_uri: str = ""
+    verifier: str = ""
+
+    def has_evidence(self) -> bool:
+        return bool(self.event_id or self.evidence_uri) and bool(self.verifier)
 
     def flags(self) -> tuple[bool, bool, bool]:
         """(prevented, alerted, logged), explicit values overriding the outcome's defaults."""
@@ -86,6 +102,12 @@ class TechniqueResult:
     verified_rate: float  # V_t: mean of alerted * freshness per procedure
     contribution: float  # w_t * V_t
     residual: float  # w_t * (1 - V_t): what is left to win on this technique
+    planned: int | None = None  # None when no plan was given
+    executed_planned: int = 0
+    unplanned: int = 0  # procedures run that were not in the plan
+    execution_rate: float | None = None
+    stale_share: float = 0.0  # detections that exist but have expired
+    unverified: int = 0  # alerts/preventions without evidence, not counted
     has_rule: bool | None = None
     previous_detection_rate: float | None = None
 
@@ -95,8 +117,15 @@ class Report:
     as_of: date
     freshness: str
     counts_prevented: bool
+    requires_evidence: bool
     vdc: float
     techniques: list[TechniqueResult]
+    plan_used: bool = False
+    execution_rate: float | None = None
+    freshness_debt: float = 0.0
+    unverified: int = 0
+    vdc_previous: float | None = None
+    freshness_debt_previous: float | None = None
     claimed_coverage: float | None = None
     claimed_coverage_weighted: float | None = None
     claim_gap: float | None = None
@@ -168,7 +197,8 @@ def _flag(value: str | None, path: Path, line: int, column: str) -> bool | None:
 
 
 def load_validations(path: Path) -> list[Validation]:
-    """Read technique_id, procedure_id, tested_on, outcome[, notes, prevented, alerted, logged]."""
+    """Read technique_id, procedure_id, tested_on, outcome[, notes, prevented, alerted,
+    logged, run_id, rule_id, event_id, evidence_uri, verifier]."""
     out = []
     with open(path, encoding="utf-8", newline="") as f:
         for i, r in enumerate(csv.DictReader(f), start=2):
@@ -185,6 +215,11 @@ def load_validations(path: Path) -> list[Validation]:
                     _flag(r.get("prevented"), path, i, "prevented"),
                     _flag(r.get("alerted"), path, i, "alerted"),
                     _flag(r.get("logged"), path, i, "logged"),
+                    (r.get("run_id") or "").strip(),
+                    (r.get("rule_id") or "").strip(),
+                    (r.get("event_id") or "").strip(),
+                    (r.get("evidence_uri") or "").strip(),
+                    (r.get("verifier") or "").strip(),
                 )
             )
     return out
@@ -203,6 +238,10 @@ def load_claimed(path: Path) -> set[str]:
 def freshness(age_days: int, mode: str = "step", window: int = 90, half_life: int = 90) -> float:
     if age_days < 0:
         raise ValueError("validation date is after the as-of date")
+    if window < 0:
+        raise ValueError("window must not be negative")
+    if half_life <= 0:
+        raise ValueError("half_life must be positive")
     if mode == "step":
         return 1.0 if age_days <= window else 0.0
     if mode == "exp":
@@ -233,23 +272,18 @@ def _latest(validations: list[Validation], weights: dict, as_of: date) -> dict[s
     return latest
 
 
-def _hit(v: Validation, counts_prevented: bool) -> bool:
+def _claimed(v: Validation, counts_prevented: bool) -> bool:
     prevented, alerted, _ = v.flags()
     return alerted or (counts_prevented and prevented)
 
 
-def detection_rates(
-    validations: list[Validation], weights: dict, as_of: date, counts_prevented: bool = False
-) -> dict[str, float]:
-    return {
-        t: sum(_hit(v, counts_prevented) for v in procs.values()) / len(procs)
-        for t, procs in _latest(validations, weights, as_of).items()
-        if procs
-    }
+def _hit(v: Validation, counts_prevented: bool, requires_evidence: bool = True) -> bool:
+    return _claimed(v, counts_prevented) and (v.has_evidence() or not requires_evidence)
 
 
 def _remediation_days(
-    validations: list[Validation], weights: dict, as_of: date, counts_prevented: bool
+    validations: list[Validation], weights: dict, as_of: date, counts_prevented: bool,
+    requires_evidence: bool,
 ) -> list[int]:
     """Days from a failed test of a procedure to the first later detected test of it."""
     history: dict[tuple, list[Validation]] = {}
@@ -261,13 +295,60 @@ def _remediation_days(
         runs.sort(key=lambda v: v.tested_on)
         failed_since = None
         for v in runs:
-            if _hit(v, counts_prevented):
+            if _hit(v, counts_prevented, requires_evidence):
                 if failed_since is not None:
                     days.append((v.tested_on - failed_since).days)
                     failed_since = None
             elif failed_since is None:
                 failed_since = v.tested_on
     return days
+
+
+def _technique_results(
+    weights: dict, validations: list[Validation], as_of: date, mode: str, window: int,
+    half_life: int, counts_prevented: bool, requires_evidence: bool,
+    planned: dict[str, set] | None,
+) -> list[TechniqueResult]:
+    latest = _latest(validations, weights, as_of)
+    results = []
+    for t, (name, w) in weights.items():
+        runs = latest.get(t, {})
+        plan_keys = planned.get(t, set()) if planned is not None else set()
+        n = len(set(runs) | plan_keys) if planned is not None else len(runs)
+        procs = list(runs.values())
+        fresh = [freshness((as_of - v.tested_on).days, mode, window, half_life) for v in procs]
+        hits = [_hit(v, counts_prevented, requires_evidence) for v in procs]
+        flags = [v.flags() for v in procs]
+        detected = sum(hits)
+        verified = sum(f for f, h in zip(fresh, hits) if h) / n if n else 0.0
+        stale = sum(1 - f for f, h in zip(fresh, hits) if h) / n if n else 0.0
+        results.append(
+            TechniqueResult(
+                technique_id=t,
+                name=name,
+                weight=w,
+                procedures=len(procs),
+                detected=detected,
+                prevented=sum(p for p, _, _ in flags),
+                logged=sum(lg for _, _, lg in flags),
+                last_validated=max((v.tested_on for v in procs), default=None),
+                detection_rate=detected / len(procs) if procs else 0.0,
+                prevention_rate=sum(p for p, _, _ in flags) / len(procs) if procs else 0.0,
+                log_rate=sum(lg for _, _, lg in flags) / len(procs) if procs else 0.0,
+                freshness=sum(fresh) / len(procs) if procs else 0.0,
+                verified_rate=verified,
+                contribution=w * verified,
+                residual=w * (1 - verified),
+                planned=len(plan_keys) if planned is not None else None,
+                executed_planned=len(set(runs) & plan_keys),
+                unplanned=len(set(runs) - plan_keys) if planned is not None else 0,
+                execution_rate=(len(set(runs) & plan_keys) / len(plan_keys) if plan_keys else 0.0)
+                if planned is not None else None,
+                stale_share=stale,
+                unverified=sum(_claimed(v, counts_prevented) and not h for v, h in zip(procs, hits)),
+            )
+        )
+    return results
 
 
 def compute(
@@ -280,46 +361,37 @@ def compute(
     claimed: set[str] | None = None,
     previous_as_of: date | None = None,
     counts_prevented: bool = False,
+    requires_evidence: bool = True,
+    plan: list[PlannedProcedure] | None = None,
 ) -> Report:
-    """Compute VDC. By default only alerts count as detection; pass
-    counts_prevented=True to also count prevention without an alert."""
-    check_weights(weights)
-    latest = _latest(validations, weights, as_of)
-    previous = (
-        detection_rates(validations, weights, previous_as_of, counts_prevented)
-        if previous_as_of
-        else {}
-    )
+    """Compute VDC.
 
-    results = []
-    for t, (name, w) in weights.items():
-        procs = list(latest.get(t, {}).values())
-        n = len(procs)
-        fresh = [freshness((as_of - v.tested_on).days, mode, window, half_life) for v in procs]
-        hits = [_hit(v, counts_prevented) for v in procs]
-        flags = [v.flags() for v in procs]
-        verified = sum(f for f, h in zip(fresh, hits) if h) / n if n else 0.0
-        results.append(
-            TechniqueResult(
-                technique_id=t,
-                name=name,
-                weight=w,
-                procedures=n,
-                detected=sum(hits),
-                prevented=sum(p for p, _, _ in flags),
-                logged=sum(lg for _, _, lg in flags),
-                last_validated=max((v.tested_on for v in procs), default=None),
-                detection_rate=sum(hits) / n if n else 0.0,
-                prevention_rate=sum(p for p, _, _ in flags) / n if n else 0.0,
-                log_rate=sum(lg for _, _, lg in flags) / n if n else 0.0,
-                freshness=sum(fresh) / n if n else 0.0,
-                verified_rate=verified,
-                contribution=w * verified,
-                residual=w * (1 - verified),
-                has_rule=(t in claimed) if claimed is not None else None,
-                previous_detection_rate=previous.get(t) if previous_as_of else None,
-            )
-        )
+    By default only alerts count as detection (counts_prevented=True adds
+    prevention) and only when backed by evidence (requires_evidence=False
+    accepts self-reported results). With a plan, untested planned procedures
+    count as misses.
+    """
+    check_weights(weights)
+    freshness(0, mode, window, half_life)  # validate parameters even with no records
+    planned: dict[str, set] | None = None
+    if plan is not None:
+        planned = {}
+        for p in plan:
+            t = _resolve(p.technique_id, weights)
+            if t:
+                planned.setdefault(t, set()).add((p.technique_id, p.procedure_id))
+
+    opts = dict(mode=mode, window=window, half_life=half_life, counts_prevented=counts_prevented,
+                requires_evidence=requires_evidence, planned=planned)
+    results = _technique_results(weights, validations, as_of, **opts)
+    previous = (
+        {r.technique_id: r for r in _technique_results(weights, validations, previous_as_of, **opts)}
+        if previous_as_of else {}
+    )
+    for r in results:
+        if previous_as_of:
+            r.previous_detection_rate = previous[r.technique_id].detection_rate
+        r.has_rule = (r.technique_id in claimed) if claimed is not None else None
 
     vdc = sum(r.contribution for r in results)
     if not -1e-9 <= vdc <= 1 + 1e-9:
@@ -328,14 +400,21 @@ def compute(
         as_of=as_of,
         freshness=f"step({window}d)" if mode == "step" else f"exp(half-life {half_life}d)",
         counts_prevented=counts_prevented,
+        requires_evidence=requires_evidence,
         vdc=min(max(vdc, 0.0), 1.0),
         techniques=sorted(results, key=lambda r: (-round(r.residual, 9), r.technique_id)),
+        plan_used=plan is not None,
+        freshness_debt=sum(r.weight * r.stale_share for r in results),
+        unverified=sum(r.unverified for r in results),
     )
     tested = sum(r.procedures for r in results)
     if tested:
         report.detection_rate = sum(r.detected for r in results) / tested
         report.prevention_rate = sum(r.prevented for r in results) / tested
         report.log_rate = sum(r.logged for r in results) / tested
+    if planned is not None:
+        total = sum(r.planned or 0 for r in results)
+        report.execution_rate = sum(r.executed_planned for r in results) / total if total else 0.0
 
     if claimed is not None:
         report.claimed_coverage = sum(r.has_rule for r in results) / len(results)
@@ -343,15 +422,16 @@ def compute(
         report.claim_gap = report.claimed_coverage_weighted - report.vdc
 
     if previous_as_of:
+        prev = previous.values()
+        report.vdc_previous = sum(r.contribution for r in prev)
+        report.freshness_debt_previous = sum(r.weight * r.stale_share for r in prev)
         before = [r for r in results if (r.previous_detection_rate or 0) > 0]
         report.regressed = sorted(
-            r.technique_id
-            for r in before
-            if r.technique_id in latest and r.detection_rate < r.previous_detection_rate
+            r.technique_id for r in before if r.detection_rate < r.previous_detection_rate
         )
         report.regression_rate = len(report.regressed) / len(before) if before else 0.0
 
-    days = _remediation_days(validations, weights, as_of, counts_prevented)
+    days = _remediation_days(validations, weights, as_of, counts_prevented, requires_evidence)
     report.remediations = len(days)
     report.mean_days_to_remediate = sum(days) / len(days) if days else None
     return report
@@ -362,22 +442,36 @@ def format_text(report: Report) -> str:
         return "-" if x is None else f"{x * 100:.1f}%"
 
     detection = "アラート＋防御" if report.counts_prevented else "アラートのみ"
+    evidence = "証跡必須" if report.requires_evidence else "自己申告も可"
     lines = [
-        f"基準日: {report.as_of}  鮮度: {report.freshness}（手順ごと）  検知とみなす結果: {detection}",
-        f"VDC（検証済み検知カバレッジ）: {pct(report.vdc)}",
+        f"基準日: {report.as_of}  鮮度: {report.freshness}（手順ごと）  検知: {detection}（{evidence}）",
+        f"VDC（検証済み検知カバレッジ）: {pct(report.vdc)}"
+        + (f"  （前回 {pct(report.vdc_previous)}）" if report.vdc_previous is not None else ""),
     ]
+    if report.plan_used:
+        lines.append(f"検証計画の実施率: {pct(report.execution_rate)}（未実施の計画手順は未検知として数える）")
+    else:
+        lines.append("検証計画: なし（分母は実施した手順の数。少数の手順で高い値になり得る）")
     if report.claimed_coverage is not None:
         lines.append(
             f"自己申告カバレッジ: {pct(report.claimed_coverage)}（件数） / "
             f"{pct(report.claimed_coverage_weighted)}（重みつき）  申告ギャップ: {pct(report.claim_gap)}"
         )
     lines.append(
-        f"手順全体の割合  検知: {pct(report.detection_rate)}  防御: {pct(report.prevention_rate)}  "
+        f"実施した手順の割合  検知: {pct(report.detection_rate)}  防御: {pct(report.prevention_rate)}  "
         f"ログ（可視性）: {pct(report.log_rate)}"
+    )
+    if report.unverified:
+        lines.append(f"証跡のない検知・防御: {report.unverified} 件（VDC に数えていない）")
+    lines.append(
+        f"鮮度の負債（検知できたが失効した分）: {pct(report.freshness_debt)}"
+        + (f"  （前回 {pct(report.freshness_debt_previous)}）"
+           if report.freshness_debt_previous is not None else "")
     )
     if report.regression_rate is not None:
         lines.append(
-            f"回帰率: {pct(report.regression_rate)}  劣化した技術: {', '.join(report.regressed) or 'なし'}"
+            f"回帰率（検知能力の低下）: {pct(report.regression_rate)}  "
+            f"劣化した技術: {', '.join(report.regressed) or 'なし'}"
         )
     if report.mean_days_to_remediate is not None:
         lines.append(
@@ -386,14 +480,15 @@ def format_text(report: Report) -> str:
     lines += [
         "",
         "優先度順（残り = w × (1 − V) の大きい順。V = 手順ごとの 検知 × 鮮度 の平均）",
-        "technique     weight  proc      D      P    log      F      V  contrib  resid  last        name",
+        "technique     weight  plan  run      D      P    log      F      V  stale  contrib  resid  last        name",
     ]
     for r in report.techniques:
         last = r.last_validated.isoformat() if r.last_validated else "never     "
+        plan = "-" if r.planned is None else str(r.planned)
         lines.append(
-            f"{r.technique_id:<11} {r.weight:>8.3f} {r.procedures:>5} {r.detection_rate:>6.2f} "
+            f"{r.technique_id:<11} {r.weight:>8.3f} {plan:>5} {r.procedures:>4} {r.detection_rate:>6.2f} "
             f"{r.prevention_rate:>6.2f} {r.log_rate:>6.2f} {r.freshness:>6.2f} {r.verified_rate:>6.2f} "
-            f"{r.contribution:>8.3f} {r.residual:>6.3f}  {last}  {r.name}"
+            f"{r.stale_share:>6.2f} {r.contribution:>8.3f} {r.residual:>6.3f}  {last}  {r.name}"
         )
     return "\n".join(lines)
 

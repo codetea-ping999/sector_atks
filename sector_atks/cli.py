@@ -10,7 +10,7 @@ from datetime import date
 from pathlib import Path
 
 from . import attack as attack_mod
-from . import sectors, vdc, weights
+from . import engagement, evidence, sectors, vdc, weights
 
 
 def cmd_fetch_attack(args: argparse.Namespace) -> None:
@@ -68,9 +68,11 @@ def cmd_build_weights(args: argparse.Namespace) -> None:
     tagged_top = weights.top_set(weights.sector_weights(att, tagged, **opts))
     untagged_top = weights.top_set(weights.sector_weights(att, set(untagged), **opts))
 
+    loose = sectors.groups_by_sector(sectors.tag_groups(att.groups, overrides, strict=False))
     summary = []
     for sector, gids in by_sector.items():
         rows = weights.sector_weights(att, gids, **opts)
+        loose_top = weights.top_set(weights.sector_weights(att, loose[sector], **opts))
         weights.write_weights(rows, out / "weights" / f"{sector}.csv")
         top = ", ".join(r.technique_id for r in rows[:5])
         summary.append([
@@ -78,13 +80,16 @@ def cmd_build_weights(args: argparse.Namespace) -> None:
             "yes" if len(gids) < weights.MIN_GROUPS else "no",
             f"{weights.jaccard(weights.top_set(rows), base_top):.2f}",
             f"{weights.bootstrap_stability(att, gids, **opts):.2f}",
+            len(loose[sector]),
+            f"{weights.jaccard(weights.top_set(rows), loose_top):.2f}",
             len(rows), top,
         ])
 
     with open(out / "sector_summary.csv", "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
         w.writerow(["sector", "label_ja", "groups", "low_n", "overlap_with_all_groups",
-                    "bootstrap_stability", "techniques", "top5"])
+                    "bootstrap_stability", "groups_loose_rule", "overlap_with_loose_rule",
+                    "techniques", "top5"])
         w.writerows(summary)
 
     with open(out / "log_sources.csv", "w", encoding="utf-8", newline="") as f:
@@ -111,7 +116,7 @@ def cmd_build_weights(args: argparse.Namespace) -> None:
     vdc.write_json(meta, out / "build_info.json")
     for row in summary:
         print(f"{row[0]:<20} groups={row[2]:<3} low_n={row[3]:<3} overlap={row[4]} "
-              f"stability={row[5]} top5={row[7]}")
+              f"stability={row[5]} loose={row[6]}/{row[7]} top5={row[9]}")
     print(f"ATT&CK v{att.version}: wrote {out}")
 
 
@@ -127,6 +132,8 @@ def cmd_vdc(args: argparse.Namespace) -> None:
         claimed=vdc.load_claimed(Path(args.claimed)) if args.claimed else None,
         previous_as_of=date.fromisoformat(args.previous_as_of) if args.previous_as_of else None,
         counts_prevented=args.count_prevented,
+        requires_evidence=not args.allow_unverified,
+        plan=engagement.load_plan(Path(args.plan)) if args.plan else None,
     )
     print(vdc.format_text(report))
     if args.json:
@@ -135,6 +142,70 @@ def cmd_vdc(args: argparse.Namespace) -> None:
         vdc.write_json(
             vdc.navigator_layer(report, args.layer_name, args.attack_version), Path(args.layer)
         )
+
+
+def cmd_check_roe(args: argparse.Namespace) -> None:
+    data = json.loads(Path(args.roe).read_text(encoding="utf-8"))
+    problems = engagement.check_roe(data)
+    if problems:
+        raise ValueError("incomplete rules of engagement:\n  " + "\n  ".join(problems))
+    print(f"OK: {data['engagement_id']} ({data['environment']}, "
+          f"{len(data['scope']['hosts'])} hosts, {data['window']['start']} - {data['window']['end']})")
+
+
+def cmd_match_evidence(args: argparse.Namespace) -> None:
+    roe = engagement.load_roe(Path(args.roe))
+    result = evidence.match(
+        evidence.load_runs(Path(args.runs)),
+        evidence.load_events(Path(args.alerts)),
+        evidence.load_events(Path(args.logs)) if args.logs else None,
+        roe=roe,
+        verifier=args.verifier,
+        grace_seconds=args.grace,
+    )
+    evidence.write_validations(result.rows, Path(args.output))
+    print(f"{len(result.rows)} runs matched -> {args.output}")
+    for run_id, reason in result.rejected:
+        print(f"rejected {run_id}: {reason}", file=sys.stderr)
+    if result.unmatched_alerts:
+        print(f"{len(result.unmatched_alerts)} alerts did not match any run "
+              f"(first: {', '.join(result.unmatched_alerts[:5])})")
+    if result.rejected:
+        raise ValueError(f"{len(result.rejected)} runs were outside the rules of engagement")
+
+
+def _read_catalog(path: Path) -> list[dict]:
+    with open(path, encoding="utf-8", newline="") as f:
+        return list(csv.DictReader(line for line in f if not line.startswith("#")))
+
+
+def cmd_plan_candidates(args: argparse.Namespace) -> None:
+    """List public emulation plans that cover each priority technique."""
+    w = vdc.load_weights(Path(args.weights))
+    catalog = _read_catalog(Path(args.catalog))
+    sector_groups: set[str] = set()
+    if args.group_sectors and args.sector:
+        with open(args.group_sectors, encoding="utf-8", newline="") as f:
+            sector_groups = {r["group_id"] for r in csv.DictReader(f) if r["sector"] == args.sector}
+
+    def covers(plan: dict, tid: str) -> bool:
+        return any(attack_mod.parent_id(t) == tid or t == tid for t in plan["techniques"].split(";"))
+
+    out = Path(args.output)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w", encoding="utf-8", newline="") as f:
+        cw = csv.writer(f)
+        cw.writerow(["technique_id", "name", "weight", "micro_plans", "sector_group_plans",
+                     "other_full_plans"])
+        for tid, (name, weight) in sorted(w.items(), key=lambda kv: -kv[1][1]):
+            plans = [p for p in catalog if covers(p, tid)]
+            micro = [p["plan"] for p in plans if p["kind"] == "micro"]
+            full = [p for p in plans if p["kind"] == "full"]
+            in_sector = [f"{p['plan']}({p['group_id']})" for p in full if p["group_id"] in sector_groups]
+            other = [p["plan"] for p in full if p["group_id"] not in sector_groups]
+            cw.writerow([tid, name, f"{weight:.4f}", ";".join(micro), ";".join(in_sector),
+                         ";".join(other)])
+    print(f"wrote {out}")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -173,6 +244,9 @@ def build_parser() -> argparse.ArgumentParser:
     v.add_argument("--freshness", choices=["step", "exp"], default="step")
     v.add_argument("--window", type=int, default=90, help="days for step freshness")
     v.add_argument("--half-life", type=int, default=90, help="days for exp freshness")
+    v.add_argument("--plan", help="CSV test plan; untested planned procedures count as misses")
+    v.add_argument("--allow-unverified", action="store_true",
+                   help="count alerts without event_id/evidence_uri and verifier (not recommended)")
     v.add_argument("--count-prevented", action="store_true",
                    help="also count prevention without an alert as detected (default: alerts only)")
     v.add_argument("--json", help="write the full report as JSON")
@@ -180,6 +254,28 @@ def build_parser() -> argparse.ArgumentParser:
     v.add_argument("--layer-name", default="Verified Detection Coverage")
     v.add_argument("--attack-version", default="", help="ATT&CK version for the layer")
     v.set_defaults(func=cmd_vdc)
+
+    r = sub.add_parser("check-roe", help="check that rules of engagement are complete")
+    r.add_argument("roe", help="RoE JSON file")
+    r.set_defaults(func=cmd_check_roe)
+
+    m = sub.add_parser("match-evidence", help="match run records with SIEM/EDR exports")
+    m.add_argument("--roe", required=True, help="RoE JSON; runs outside it are rejected")
+    m.add_argument("--runs", required=True)
+    m.add_argument("--alerts", required=True)
+    m.add_argument("--logs", help="optional telemetry export for visibility")
+    m.add_argument("--verifier", required=True, help="who reviewed the matches")
+    m.add_argument("--grace", type=int, default=300, help="seconds after a run to accept events")
+    m.add_argument("-o", "--output", default="out/validations.csv")
+    m.set_defaults(func=cmd_match_evidence)
+
+    c2 = sub.add_parser("plan-candidates", help="public emulation plans per priority technique")
+    c2.add_argument("--weights", required=True)
+    c2.add_argument("--catalog", default="data/emulation/ctid_catalog.csv")
+    c2.add_argument("--group-sectors", help="group_sectors.csv to find plans for the sector's groups")
+    c2.add_argument("--sector", help="sector id matching the weights file")
+    c2.add_argument("-o", "--output", default="out/plan_candidates.csv")
+    c2.set_defaults(func=cmd_plan_candidates)
     return p
 
 
