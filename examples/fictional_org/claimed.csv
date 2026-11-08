@@ -1,0 +1,6 @@
+technique_id,has_rule
+T1566,true
+T1059,true
+T1078,true
+T1021,true
+T1041,true

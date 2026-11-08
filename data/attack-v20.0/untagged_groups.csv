@@ -1,0 +1,69 @@
+group_id,group_name,techniques,source
+G0002,Moafee,1,https://attack.mitre.org/groups/G0002/
+G0003,Cleaver,5,https://attack.mitre.org/groups/G0003/
+G0006,APT1,23,https://attack.mitre.org/groups/G0006/
+G0011,PittyTiger,2,https://attack.mitre.org/groups/G0011/
+G0012,Darkhotel,24,https://attack.mitre.org/groups/G0012/
+G0013,APT30,2,https://attack.mitre.org/groups/G0013/
+G0017,DragonOK,0,https://attack.mitre.org/groups/G0017/
+G0020,Equation,4,https://attack.mitre.org/groups/G0020/
+G0021,Molerats,16,https://attack.mitre.org/groups/G0021/
+G0023,APT16,1,https://attack.mitre.org/groups/G0023/
+G0024,Putter Panda,4,https://attack.mitre.org/groups/G0024/
+G0025,APT17,2,https://attack.mitre.org/groups/G0025/
+G0028,Threat Group-1314,4,https://attack.mitre.org/groups/G0028/
+G0030,Lotus Blossom,21,https://attack.mitre.org/groups/G0030/
+G0032,Lazarus Group,119,https://attack.mitre.org/groups/G0032/
+G0033,Poseidon Group,8,https://attack.mitre.org/groups/G0033/
+G0039,Suckfly,5,https://attack.mitre.org/groups/G0039/
+G0041,Strider,3,https://attack.mitre.org/groups/G0041/
+G0043,Group5,4,https://attack.mitre.org/groups/G0043/
+G0044,Winnti Group,6,https://attack.mitre.org/groups/G0044/
+G0048,RTM,7,https://attack.mitre.org/groups/G0048/
+G0051,FIN10,11,https://attack.mitre.org/groups/G0051/
+G0052,CopyKittens,8,https://attack.mitre.org/groups/G0052/
+G0055,NEODYMIUM,0,https://attack.mitre.org/groups/G0055/
+G0056,PROMETHIUM,11,https://attack.mitre.org/groups/G0056/
+G0062,TA459,5,https://attack.mitre.org/groups/G0062/
+G0063,BlackOasis,1,https://attack.mitre.org/groups/G0063/
+G0067,APT37,29,https://attack.mitre.org/groups/G0067/
+G0070,Dark Caracal,12,https://attack.mitre.org/groups/G0070/
+G0075,Rancor,9,https://attack.mitre.org/groups/G0075/
+G0085,FIN4,12,https://attack.mitre.org/groups/G0085/
+G0088,TEMP.Veles,22,https://attack.mitre.org/groups/G0088/
+G0092,TA505,34,https://attack.mitre.org/groups/G0092/
+G0106,Rocke,36,https://attack.mitre.org/groups/G0106/
+G0107,Whitefly,9,https://attack.mitre.org/groups/G0107/
+G0108,Blue Mockingbird,22,https://attack.mitre.org/groups/G0108/
+G0115,GOLD SOUTHFIELD,9,https://attack.mitre.org/groups/G0115/
+G0119,Indrik Spider,33,https://attack.mitre.org/groups/G0119/
+G0120,Evilnum,11,https://attack.mitre.org/groups/G0120/
+G0123,Volatile Cedar,5,https://attack.mitre.org/groups/G0123/
+G0124,Windigo,7,https://attack.mitre.org/groups/G0124/
+G0127,TA551,14,https://attack.mitre.org/groups/G0127/
+G0128,ZIRCONIUM,29,https://attack.mitre.org/groups/G0128/
+G0137,Ferocious Kitten,6,https://attack.mitre.org/groups/G0137/
+G0139,TeamTNT,56,https://attack.mitre.org/groups/G0139/
+G1017,Volt Typhoon,98,https://attack.mitre.org/groups/G1017/
+G1020,Mustard Tempest,12,https://attack.mitre.org/groups/G1020/
+G1021,Cinnamon Tempest,19,https://attack.mitre.org/groups/G1021/
+G1024,Akira,17,https://attack.mitre.org/groups/G1024/
+G1026,Malteiro,12,https://attack.mitre.org/groups/G1026/
+G1030,Agrius,22,https://attack.mitre.org/groups/G1030/
+G1031,Saint Bear,18,https://attack.mitre.org/groups/G1031/
+G1036,Moonstone Sleet,30,https://attack.mitre.org/groups/G1036/
+G1037,TA577,6,https://attack.mitre.org/groups/G1037/
+G1038,TA578,4,https://attack.mitre.org/groups/G1038/
+G1041,Sea Turtle,27,https://attack.mitre.org/groups/G1041/
+G1042,RedEcho,5,https://attack.mitre.org/groups/G1042/
+G1043,BlackByte,48,https://attack.mitre.org/groups/G1043/
+G1044,APT42,33,https://attack.mitre.org/groups/G1044/
+G1045,Salt Typhoon,58,https://attack.mitre.org/groups/G1045/
+G1046,Storm-1811,31,https://attack.mitre.org/groups/G1046/
+G1047,Velvet Ant,22,https://attack.mitre.org/groups/G1047/
+G1050,Water Galura,3,https://attack.mitre.org/groups/G1050/
+G1051,Medusa Group,57,https://attack.mitre.org/groups/G1051/
+G1053,Storm-0501,42,https://attack.mitre.org/groups/G1053/
+G1056,TeamPCP,37,https://attack.mitre.org/groups/G1056/
+G1057,ShinyHunters,46,https://attack.mitre.org/groups/G1057/
+G1058,The Gentlemen,17,https://attack.mitre.org/groups/G1058/

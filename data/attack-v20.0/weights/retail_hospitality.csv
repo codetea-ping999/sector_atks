@@ -1,0 +1,111 @@
+rank,technique_id,name,groups_using,share,lift,prevalence,score,weight
+1,T1078,Valid Accounts,8,1.0000,2.472,0.0000,1.0000,0.0678
+2,T1059,Command and Scripting Interpreter,8,1.0000,1.402,0.0000,1.0000,0.0678
+3,T1074,Data Staged,7,0.8750,3.708,0.0000,0.8750,0.0593
+4,T1021,Remote Services,7,0.8750,2.434,0.0000,0.8750,0.0593
+5,T1102,Web Service,6,0.7500,3.608,0.0000,0.7500,0.0508
+6,T1047,Windows Management Instrumentation,6,0.7500,3.034,0.0000,0.7500,0.0508
+7,T1018,Remote System Discovery,6,0.7500,2.967,0.0000,0.7500,0.0508
+8,T1070,Indicator Removal,6,0.7500,2.567,0.0000,0.7500,0.0508
+9,T1003,OS Credential Dumping,6,0.7500,2.225,0.0000,0.7500,0.0508
+10,T1053,Scheduled Task/Job,6,0.7500,2.225,0.0000,0.7500,0.0508
+11,T1105,Ingress Tool Transfer,6,0.7500,1.467,0.0000,0.7500,0.0508
+12,T1566,Phishing,6,0.7500,1.335,0.0000,0.7500,0.0508
+13,T1553,Subvert Trust Controls,5,0.6250,3.272,0.0000,0.6250,0.0424
+14,T1046,Network Service Discovery,5,0.6250,3.179,0.0000,0.6250,0.0424
+15,T1087,Account Discovery,5,0.6250,2.587,0.0000,0.6250,0.0424
+16,T1090,Proxy,5,0.6250,2.418,0.0000,0.6250,0.0424
+17,T1005,Data from Local System,5,0.6250,2.367,0.0000,0.6250,0.0424
+18,T1685,Disable or Modify Tools,5,0.6250,2.367,0.0000,0.6250,0.0424
+19,T1190,Exploit Public-Facing Application,5,0.6250,2.318,0.0000,0.6250,0.0424
+20,T1560,Archive Collected Data,5,0.6250,2.099,0.0000,0.6250,0.0424
+21,T1082,System Information Discovery,5,0.6250,1.824,0.0000,0.6250,
+22,T1547,Boot or Logon Autostart Execution,5,0.6250,1.824,0.0000,0.6250,
+23,T1071,Application Layer Protocol,5,0.6250,1.589,0.0000,0.6250,
+24,T1036,Masquerading,5,0.6250,1.209,0.0000,0.6250,
+25,T1027,Obfuscated Files or Information,5,0.6250,1.135,0.0000,0.6250,
+26,T1204,User Execution,5,0.6250,1.112,0.0000,0.6250,
+27,T1134,Access Token Manipulation,4,0.5000,8.091,0.0000,0.5000,
+28,T1572,Protocol Tunneling,4,0.5000,5.235,0.0000,0.5000,
+29,T1569,System Services,4,0.5000,4.944,0.0000,0.5000,
+30,T1486,Data Encrypted for Impact,4,0.5000,4.450,0.0000,0.5000,
+31,T1069,Permission Groups Discovery,4,0.5000,3.870,0.0000,0.5000,
+32,T1136,Create Account,4,0.5000,3.708,0.0000,0.5000,
+33,T1546,Event Triggered Execution,4,0.5000,3.560,0.0000,0.5000,
+34,T1110,Brute Force,4,0.5000,3.179,0.0000,0.5000,
+35,T1133,External Remote Services,4,0.5000,3.069,0.0000,0.5000,
+36,T1555,Credentials from Password Stores,4,0.5000,2.342,0.0000,0.5000,
+37,T1033,System Owner/User Discovery,4,0.5000,2.225,0.0000,0.5000,
+38,T1140,Deobfuscate/Decode Files or Information,4,0.5000,2.171,0.0000,0.5000,
+39,T1016,System Network Configuration Discovery,4,0.5000,1.745,0.0000,0.5000,
+40,T1083,File and Directory Discovery,4,0.5000,1.679,0.0000,0.5000,
+41,T1135,Network Share Discovery,3,0.3750,3.926,0.0000,0.3750,
+42,T1213,Data from Information Repositories,3,0.3750,3.513,0.0000,0.3750,
+43,T1048,Exfiltration Over Alternative Protocol,3,0.3750,3.337,0.0000,0.3750,
+44,T1098,Account Manipulation,3,0.3750,3.179,0.0000,0.3750,
+45,T1119,Automated Collection,3,0.3750,3.034,0.0000,0.3750,
+46,T1068,Exploitation for Privilege Escalation,3,0.3750,2.781,0.0000,0.3750,
+47,T1041,Exfiltration Over C2 Channel,3,0.3750,2.225,0.0000,0.3750,
+48,T1056,Input Capture,3,0.3750,2.153,0.0000,0.3750,
+49,T1567,Exfiltration Over Web Service,3,0.3750,2.086,0.0000,0.3750,
+50,T1573,Encrypted Channel,3,0.3750,2.086,0.0000,0.3750,
+51,T1543,Create or Modify System Process,3,0.3750,2.023,0.0000,0.3750,
+52,T1505,Server Software Component,3,0.3750,1.854,0.0000,0.3750,
+53,T1564,Hide Artifacts,3,0.3750,1.757,0.0000,0.3750,
+54,T1008,Fallback Channels,2,0.2500,8.900,0.0000,0.2500,
+55,T1197,BITS Jobs,2,0.2500,8.900,0.0000,0.2500,
+56,T1484,Domain or Tenant Policy Modification,2,0.2500,5.562,0.0000,0.2500,
+57,T1556,Modify Authentication Process,2,0.2500,4.944,0.0000,0.2500,
+58,T1195,Supply Chain Compromise,2,0.2500,2.781,0.0000,0.2500,
+59,T1550,Use Alternate Authentication Material,2,0.2500,2.618,0.0000,0.2500,
+60,T1113,Screen Capture,2,0.2500,2.342,0.0000,0.2500,
+61,T1657,Financial Theft,2,0.2500,2.342,0.0000,0.2500,
+62,T1012,Query Registry,2,0.2500,2.225,0.0000,0.2500,
+63,T1684,Social Engineering,2,0.2500,2.225,0.0000,0.2500,
+64,T1219,Remote Access Tools,2,0.2500,1.712,0.0000,0.2500,
+65,T1552,Unsecured Credentials,2,0.2500,1.589,0.0000,0.2500,
+66,T1112,Modify Registry,2,0.2500,1.483,0.0000,0.2500,
+67,T1049,System Network Connections Discovery,2,0.2500,1.348,0.0000,0.2500,
+68,T1055,Process Injection,2,0.2500,1.309,0.0000,0.2500,
+69,T1574,Hijack Execution Flow,2,0.2500,1.141,0.0000,0.2500,
+70,T1218,System Binary Proxy Execution,2,0.2500,0.908,0.0000,0.2500,
+71,T1538,Cloud Service Dashboard,1,0.1250,22.250,0.0000,0.1250,
+72,T1674,Input Injection,1,0.1250,22.250,0.0000,0.1250,
+73,T1565,Data Manipulation,1,0.1250,11.125,0.0000,0.1250,
+74,T1599,Network Boundary Bridging,1,0.1250,11.125,0.0000,0.1250,
+75,T1006,Direct Volume Access,1,0.1250,7.417,0.0000,0.1250,
+76,T1578,Modify Cloud Compute Infrastructure,1,0.1250,7.417,0.0000,0.1250,
+77,T1580,Cloud Infrastructure Discovery,1,0.1250,7.417,0.0000,0.1250,
+78,T1621,Multi-Factor Authentication Request Generation,1,0.1250,7.417,0.0000,0.1250,
+79,T1115,Clipboard Data,1,0.1250,5.562,0.0000,0.1250,
+80,T1125,Video Capture,1,0.1250,5.562,0.0000,0.1250,
+81,T1496,Resource Hijacking,1,0.1250,5.562,0.0000,0.1250,
+82,T1542,Pre-OS Boot,1,0.1250,5.562,0.0000,0.1250,
+83,T1030,Data Transfer Size Limits,1,0.1250,4.450,0.0000,0.1250,
+84,T1104,Multi-Stage Channels,1,0.1250,4.450,0.0000,0.1250,
+85,T1014,Rootkit,1,0.1250,3.708,0.0000,0.1250,
+86,T1530,Data from Cloud Storage,1,0.1250,3.708,0.0000,0.1250,
+87,T1620,Reflective Code Loading,1,0.1250,3.708,0.0000,0.1250,
+88,T1037,Boot or Logon Initialization Scripts,1,0.1250,3.179,0.0000,0.1250,
+89,T1490,Inhibit System Recovery,1,0.1250,3.179,0.0000,0.1250,
+90,T1001,Data Obfuscation,1,0.1250,2.781,0.0000,0.1250,
+91,T1091,Replication Through Removable Media,1,0.1250,2.781,0.0000,0.1250,
+92,T1558,Steal or Forge Kerberos Tickets,1,0.1250,2.781,0.0000,0.1250,
+93,T1480,Execution Guardrails,1,0.1250,2.472,0.0000,0.1250,
+94,T1539,Steal Web Session Cookie,1,0.1250,2.472,0.0000,0.1250,
+95,T1217,Browser Information Discovery,1,0.1250,2.225,0.0000,0.1250,
+96,T1497,Virtualization/Sandbox Evasion,1,0.1250,2.023,0.0000,0.1250,
+97,T1210,Exploitation of Remote Services,1,0.1250,1.854,0.0000,0.1250,
+98,T1482,Domain Trust Discovery,1,0.1250,1.854,0.0000,0.1250,
+99,T1680,Local Storage Discovery,1,0.1250,1.854,0.0000,0.1250,
+100,T1568,Dynamic Resolution,1,0.1250,1.712,0.0000,0.1250,
+101,T1095,Non-Application Layer Protocol,1,0.1250,1.483,0.0000,0.1250,
+102,T1124,System Time Discovery,1,0.1250,1.483,0.0000,0.1250,
+103,T1559,Inter-Process Communication,1,0.1250,1.483,0.0000,0.1250,
+104,T1570,Lateral Tool Transfer,1,0.1250,1.113,0.0000,0.1250,
+105,T1571,Non-Standard Port,1,0.1250,1.011,0.0000,0.1250,
+106,T1686,Disable or Modify System Firewall,1,0.1250,1.011,0.0000,0.1250,
+107,T1114,Email Collection,1,0.1250,0.967,0.0000,0.1250,
+108,T1518,Software Discovery,1,0.1250,0.654,0.0000,0.1250,
+109,T1057,Process Discovery,1,0.1250,0.517,0.0000,0.1250,
+110,T1203,Exploitation for Client Execution,1,0.1250,0.517,0.0000,0.1250,

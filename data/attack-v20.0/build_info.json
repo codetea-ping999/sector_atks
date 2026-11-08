@@ -1,0 +1,15 @@
+{
+  "attack_version": "20.0",
+  "attack_modified": "2026-10-13T17:53:10.145Z",
+  "groups": 178,
+  "groups_tagged": 110,
+  "groups_untagged": 68,
+  "untagged_vs_tagged_top_overlap": 0.538,
+  "min_groups_for_stable_sector": 15,
+  "top_n": 20,
+  "subtechniques": false,
+  "include_campaigns": true,
+  "prevalence": null,
+  "beta": 0.0,
+  "include_pre_compromise": false
+}

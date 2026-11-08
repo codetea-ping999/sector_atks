@@ -1,0 +1,655 @@
+technique_id,name,log_sources
+T1001,Data Obfuscation,NSM:Flow; auditd:SYSCALL; macos:unifiedlog
+T1001.001,Junk Data,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:osquery; macos:unifiedlog
+T1001.002,Steganography,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:osquery; macos:unifiedlog
+T1001.003,Protocol or Service Impersonation,NSM:Content; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; macos:osquery; macos:unifiedlog
+T1003,OS Credential Dumping,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:keychain; macos:osquery; macos:unifiedlog
+T1003.001,LSASS Memory,WinEventLog:Security; WinEventLog:Sysmon
+T1003.002,Security Account Manager,WinEventLog:Security; WinEventLog:Sysmon
+T1003.003,NTDS,WinEventLog:Microsoft-Windows-VSS; WinEventLog:Security; WinEventLog:Sysmon
+T1003.004,LSA Secrets,WinEventLog:Security; WinEventLog:Sysmon
+T1003.005,Cached Domain Credentials,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; linux:osquery
+T1003.006,DCSync,NSM:Content; WinEventLog:Security
+T1003.007,Proc Filesystem,auditd:SYSCALL; linux:Sysmon
+T1003.008,/etc/passwd and /etc/shadow,auditd:SYSCALL
+T1005,Data from Local System,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxis:vmkernel; fs:fsusage; macos:unifiedlog; networkdevice:cli
+T1006,Direct Volume Access,WinEventLog:Security; WinEventLog:Sysmon; networkdevice:cli
+T1007,System Service Discovery,WinEventLog:PowerShell; WinEventLog:Security; auditd:EXECVE; macos:osquery; macos:unifiedlog
+T1008,Fallback Channels,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:vmkernel; esxi:vpxd; macos:unifiedlog
+T1010,Application Window Discovery,WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:EXECVE; linus:syslog; macos:osquery; macos:unifiedlog
+T1011,Exfiltration Over Other Network Medium,NSM:Flow; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1011.001,Exfiltration Over Bluetooth,WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; linux:osquery; linux:syslog; macos:osquery; macos:unifiedlog
+T1012,Query Registry,WinEventLog:PowerShell; WinEventLog:Sysmon
+T1014,Rootkit,WinEventLog:Sysmon; WinEventLog:System; auditd:EXECVE; fs:fsevents; linux:osquery; linux:syslog; macos:osquery; macos:unifiedlog
+T1016,System Network Configuration Discovery,WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:EXECVE; esxi:hostd; macos:unifiedlog; networkdevice:cli
+T1016.001,Internet Connection Discovery,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; esxi:hostd; esxi:shell; linux:syslog; macos:unifiedlog
+T1016.002,Wi-Fi Discovery,WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:EXECVE; auditd:PATH; macos:unifiedlog
+T1018,Remote System Discovery,WinEventLog:Sysmon; auditd:EXECVE; esxi:hostd; linux:syslog; macos:osquery; macos:unifiedlog; networkdevice:syslog
+T1020,Automated Exfiltration,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:cron; macos:unifiedlog
+T1020.001,Traffic Duplication,AWS:CloudTrail; AWS:VPCFlowLogs; networkdevice:Flow; networkdevice:syslog
+T1021,Remote Services,AWS:CloudTrail; AWS:VPCFlowLogs; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; esxi:vmkernel; linux:syslog; macos:osquery; macos:unifiedlog
+T1021.001,Remote Desktop Protocol,WinEventLog:Security; WinEventLog:Sysmon
+T1021.002,SMB/Windows Admin Shares,WinEventLog:Security; WinEventLog:Sysmon
+T1021.003,Distributed Component Object Model,WinEventLog:Security; WinEventLog:Sysmon
+T1021.004,SSH,NSM:Flow; auditd:EXECVE; esxi:auth; esxi:shell; esxi:vmkernel; linux:syslog; macos:osquery; macos:unifiedlog
+T1021.005,VNC,NSM:Flow; NSM:firewall; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; linux:syslog; macos:osquery; macos:unifiedlog
+T1021.006,Windows Remote Management,NSM:Connections; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:WinRM
+T1021.007,Cloud Services,AWS:CloudTrail; Okta:SystemLog; gcp:audit; m365:unified; saas:auth
+T1021.008,Direct Cloud VM Connections,AWS:CloudTrail; WinEventLog:Sysmon
+T1025,Data from Removable Media,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; fs:fsusage; journald:systemd; macos:osquery; macos:unifiedlog
+T1027,Obfuscated Files or Information,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; linux:cli; macos:osquery; macos:unifiedlog; networkdevice:IDS
+T1027.001,Binary Padding,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; linux:osquery; macos:unifiedlog
+T1027.002,Software Packing,WinEventLog:Sysmon; auditd:SYSCALL; macos:endpointsecurity; macos:unifiedlog
+T1027.003,Steganography,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1027.004,Compile After Delivery,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1027.005,Indicator Removal from Tools,EDR:detection; WinEventLog:Application; WinEventLog:Sysmon; auditd:SYSCALL; linux:osquery; macos:osquery; macos:unifiedlog
+T1027.006,HTML Smuggling,EDR:detection; Network Traffic; WinEventLog:Sysmon; auditd:SYSCALL; gatekeeper/quarantine database; linux:osquery; macos:osquery; macos:unifiedlog
+T1027.007,Dynamic API Resolution,WinEventLog:Sysmon; etw:Microsoft-Windows-Kernel-Process
+T1027.008,Stripped Payloads,EDR:file; NSM:Flow; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; linux:osquery; macos:endpointsecurity; macos:osquery; macos:unifiedlog
+T1027.009,Embedded Payloads,EDR:file; WinEventLog:Sysmon; auditd:SYSCALL; ebpf:syscalls; linux:osquery; macos:endpointsecurity; macos:osquery; macos:unifiedlog
+T1027.010,Command Obfuscation,WinEventLog:Security; auditd:SYSCALL; linux:osquery; macos:endpointsecurity; macos:unifiedlog
+T1027.011,Fileless Storage,WinEventLog:Application; WinEventLog:Security; auditd:SYSCALL; linux:osquery
+T1027.012,LNK Icon Smuggling,WinEventLog:Sysmon
+T1027.013,Encrypted/Encoded File,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:Sysmon; macos:endpointsecurity; macos:unifiedlog
+T1027.014,Polymorphic Code,WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; macos:endpointsecurity; macos:unifiedlog
+T1027.015,Compression,WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; macos:unifiedlog
+T1027.016,Junk Code Insertion,WinEventLog:Sysmon; auditd:SYSCALL; macos:endpointsecurity
+T1027.017,SVG Smuggling,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; macos:endpointsecurity; macos:unifiedlog
+T1027.018,Invisible Unicode,NSM:Flow; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macOS:unifiedlog; macos:unifiedlog
+T1029,Scheduled Transfer,NSM:Flow; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; linux:cron; macos:endpointsecurity; macos:launchd; macos:unifiedlog
+T1030,Data Transfer Size Limits,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; macos:endpointsecurity; macos:unifiedlog
+T1033,System Owner/User Discovery,WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; macos:endpointsecurity; macos:unifiedlog; networkdevice:syslog
+T1036,Masquerading,WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; containerd:runtime; docker:events; ebpf:syscalls; esxi:hostd; esxi:shell; fs:fileevents; linux:osquery; linux:syslog; macos:endpointsecurity; macos:unifiedlog
+T1036.001,Invalid Code Signature,WinEventLog:PowerShell; WinEventLog:Sysmon; WinEventLog:Windows Defender; fs:fileevents; macos:endpointsecurity; macos:unifiedlog
+T1036.002,Right-to-Left Override,WinEventLog:PowerShell; WinEventLog:Sysmon; WinEventLog:Windows Defender; auditd:SYSCALL; desktop:file_manager; fs:quarantine; linux:osquery; macos:endpointsecurity; macos:unifiedlog
+T1036.003,Rename Legitimate Utilities,EDR:AMSI; WinEventLog:Sysmon; auditd:SYSCALL; fs:fileevents; linux:osquery; linux:syslog; macos:endpointsecurity; macos:unifiedlog
+T1036.004,Masquerade Task or Service,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:CONFIG_CHANGE; fs:fileevents; linux:cron; linux:osquery; macos:endpointsecurity; macos:unifiedlog
+T1036.005,Match Legitimate Resource Name or Location,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; containerd:events; esxi:hostd; esxi:vmkernel; fs:fsusage; kubernetes:apiserver; linux:osquery; macos:unifiedlog
+T1036.006,Space after Filename,auditd:SYSCALL; fs:fsusage; linux:syslog; macos:unifiedlog
+T1036.007,Double File Extension,WinEventLog:Sysmon
+T1036.008,Masquerade File Type,WinEventLog:Sysmon; auditd:SYSCALL; linux:osquery; macos:unifiedlog
+T1036.009,Break Process Trees,auditd:SYSCALL; fs:fsusage; macos:unifiedlog
+T1036.010,Masquerade Account Name,WinEventLog:Security; auditd:SYSCALL; azure:audit; docker:daemon; linux:osquery; saas:okta; windows:osquery
+T1036.011,Overwrite Process Arguments,auditd:SYSCALL; ebpf:tracepoints
+T1036.012,Browser Fingerprint,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; etw:Microsoft-Windows-Kernel-Process; macos:unifiedlog
+T1037,Boot or Logon Initialization Scripts,WinEventLog:Security; WinEventLog:TaskScheduler; auditd:PATH; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; fs:fsusage; linux:osquery; macos:osquery; macos:unifiedlog; networkdevice:syslog
+T1037.001,Logon Script (Windows),WinEventLog:Security; WinEventLog:System
+T1037.002,Login Hook,fs:plist; macos:unifiedlog
+T1037.003,Network Logon Script,WinEventLog:Security; WinEventLog:System
+T1037.004,RC Scripts,auditd:SYSCALL; esxi:shell; esxi:syslog; fs:fsusage; linux:syslog; macos:unifiedlog; networkdevice:syslog
+T1037.005,Startup Items,macos:fsevents; macos:unifiedlog
+T1039,Data from Network Shared Drive,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; linux:syslog; macos:unifiedlog
+T1040,Network Sniffing,AWS:CloudTrail; WinEventLog:Security; WinEventLog:System; auditd:SYSCALL; fs:fsusage; macos:osquery; macos:unifiedlog; networkconfig ; networkdevice:syslog
+T1041,Exfiltration Over C2 Channel,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:syslog; esxi:vmkernel; esxi:vpxa; macos:osquery; macos:unifiedlog
+T1046,Network Service Discovery,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; containerd:runtime; ebpf:syscalls; macos:osquery; macos:unifiedlog
+T1047,Windows Management Instrumentation,WinEventLog:Sysmon; WinEventLog:WMI
+T1048,Exfiltration Over Alternative Protocol,AWS:CloudTrail; AWS:VPCFlowLogs; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:osquery; macos:unifiedlog
+T1048.001,Exfiltration Over Symmetric Encrypted Non-C2 Protocol,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:osquery; macos:unifiedlog
+T1048.002,Exfiltration Over Asymmetric Encrypted Non-C2 Protocol,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:osquery; macos:unifiedlog
+T1048.003,Exfiltration Over Unencrypted Non-C2 Protocol,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; macos:osquery; macos:unifiedlog; networkdevice:cli; networkdevice:syslog
+T1049,System Network Connections Discovery,AWS:CloudTrail; WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; azure:activity; esxi:hostd; linux:cli; macos:osquery; networkdevice:cli; snmp:trap
+T1052,Exfiltration Over Physical Medium,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; fs:fsusage; macos:osquery; macos:unifiedlog
+T1052.001,Exfiltration over USB,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; fs:fsusage; macos:osquery; macos:unifiedlog
+T1053,Scheduled Task/Job,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; containerd:runtime; esxi:cron; esxi:hostd; esxi:vmkernel; fs:fsusage; linux:osquery; macos:osquery; macos:unifiedlog
+T1053.002,At,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; macos:osquery; macos:unifiedlog
+T1053.003,Cron,auditd:SYSCALL; esxi:cron; esxi:hostd; esxi:vmkernel; fs:fsusage; macos:unifiedlog
+T1053.005,Scheduled Task,WinEventLog:Security; WinEventLog:Sysmon
+T1053.006,Systemd Timers,auditd:SYSCALL; linux:osquery
+T1053.007,Container Orchestration Job,container:proxy; kubernetes:apiserver; kubernetes:events
+T1055,Process Injection,WinEventLog:Sysmon; auditd:SYSCALL; etw:Microsoft-Windows-Kernel-Process; linux:procfs; macos:endpointsecurity; macos:syslog; macos:unifiedlog
+T1055.001,Dynamic-link Library Injection,WinEventLog:Sysmon
+T1055.002,Portable Executable Injection,WinEventLog:Sysmon
+T1055.003,Thread Execution Hijacking,WinEventLog:Sysmon; etw:Microsoft-Windows-Kernel-Process
+T1055.004,Asynchronous Procedure Call,WinEventLog:Sysmon; etw:Microsoft-Windows-Kernel-Process
+T1055.005,Thread Local Storage,EDR:memory; WinEventLog:Sysmon
+T1055.008,Ptrace System Calls,auditd:SYSCALL; linux:osquery
+T1055.009,Proc Memory,auditd:SYSCALL; linux:osquery
+T1055.011,Extra Window Memory Injection,WinEventLog:Security; WinEventLog:Sysmon; etw:Microsoft-Windows-Win32k
+T1055.012,Process Hollowing,WinEventLog:Sysmon; etw:Microsoft-Windows-Kernel-Process
+T1055.013,Process Doppelgänging,WinEventLog:Sysmon; etw:Microsoft-Windows-Kernel-Process
+T1055.014,VDSO Hijacking,auditd:SYSCALL; auditd:file-events; auditd:memprotect; linux:osquery
+T1055.015,ListPlanting,WinEventLog:Sysmon; etw:Microsoft-Windows-Win32k
+T1056,Input Capture,NSM:Firewall; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1056.001,Keylogging,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; macos:osquery; macos:unifiedlog; networkdevice:syslog
+T1056.002,GUI Input Capture,WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; linux:cli; macos:osquery; macos:unifiedlog
+T1056.003,Web Portal Capture,NSM:Flow; WinEventLog:Sysmon; WinEventLog:iis; auditd:SYSCALL; fs:fsusage; macos:unifiedlog
+T1056.004,Credential API Hooking,WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; macos:osquery; macos:unifiedlog
+T1057,Process Discovery,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:auth; esxi:shell; linux:osquery; macos:osquery; macos:unifiedlog; networkdevice:cli; networkdevice:syslog
+T1059,Command and Scripting Interpreter,WinEventLog:Sysmon; auditd:SYSCALL; esxi:vobd; macos:unifiedlog; networkdevice:cli; networkdevice:syslog
+T1059.001,PowerShell,WinEventLog:PowerShell; WinEventLog:Sysmon
+T1059.002,AppleScript,macos:unifiedlog
+T1059.003,Windows Command Shell,EDR:scriptblock; WinEventLog:Security; WinEventLog:Sysmon
+T1059.004,Unix Shell,NSM:Flow; auditd:SYSCALL; esxi:auth; esxi:vmkernel; linux:osquery; linux:syslog; macos:osquery; macos:syslog; macos:unifiedlog; networkdevice:syslog
+T1059.005,Visual Basic,WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:osquery; macos:syslog; macos:unifiedlog
+T1059.006,Python,EDR:hunting; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vobd; linux:syslog; macos:osquery; macos:syslog; macos:unifiedlog
+T1059.007,JavaScript,WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; m365:defender; macos:osquery; macos:syslog; macos:unifiedlog
+T1059.008,Network Device CLI,NSM:Flow; networkdevice:syslog
+T1059.009,Cloud API,AWS:CloudTrail; Okta:SystemLog; azure:activity
+T1059.010,AutoHotKey & AutoIT,WinEventLog:Sysmon
+T1059.011,Lua,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog; networkdevice:runtime
+T1059.012,Hypervisor CLI,esxi:auth; esxi:vmkernel
+T1059.013,Container CLI/API,AWS:CloudTrail; auditd:SYSCALL; docker:events; kubernetes:apiserver; kubernetes:audit
+T1068,Exploitation for Privilege Escalation,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; containerd:runtime; macos:endpointsecurity; macos:unifiedlog
+T1069,Permission Groups Discovery,WinEventLog:PowerShell; WinEventLog:Security; auditd:SYSCALL; macos:unifiedlog
+T1069.001,Local Groups,WinEventLog:Security; auditd:SYSCALL; macos:unifiedlog
+T1069.002,Domain Groups,NSM:Flow; WinEventLog:PowerShell; WinEventLog:Security; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1069.003,Cloud Groups,AWS:CloudTrail; m365:exchange; m365:sharepoint; saas:salesforce
+T1070,Indicator Removal,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; docker:daemon; ebpf:syscalls; esxi:hostd; fs:fsusage; linux:cli; m365:exchange; m365:unified; macos:osquery; macos:unifiedlog
+T1070.003,Clear Command History,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; fs:fsusage; macos:unifiedlog; networkdevice:syslog
+T1070.004,File Deletion,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; fs:fsusage; macos:unifiedlog
+T1070.005,Network Share Connection Removal,NSM:Flow; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon
+T1070.006,Timestomp,EDR:file; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:vmkernel; linux:osquery; macos:osquery; macos:unifiedlog
+T1070.007,Clear Network Connection History and Configurations,EDR:cli; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog; networkdevice:syslog
+T1070.008,Clear Mailbox Data,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; m365:exchange; macos:osquery; macos:unifiedlog
+T1070.009,Clear Persistence,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:TaskScheduler; auditd:SYSCALL; esxi:shell; esxi:vmkernel; macos:osquery; macos:unifiedlog
+T1070.010,Relocate Malware,WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog; networkdevice:syslog
+T1071,Application Layer Protocol,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1071.001,Web Protocols,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; macos:osquery; macos:unifiedlog
+T1071.002,File Transfer Protocols,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; macos:osquery; macos:unifiedlog
+T1071.003,Mail Protocols,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1071.004,DNS,NSM:FLow; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:syslog; macos:unifiedlog
+T1071.005,Publish/Subscribe Protocols,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1072,Software Deployment Tools,AWS:CloudTrail; NSM:Flow; WinEventLog:Application; WinEventLog:Security; auditd:SYSCALL; macos:jamf; macos:unifiedlog; networkdevice:syslog
+T1074,Data Staged,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; esxi:vmkernel; gcp:audit; macos:unifiedlog
+T1074.001,Local Data Staging,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; esxi:vmkernel; macos:unifiedlog
+T1074.002,Remote Data Staging,AWS:CloudTrail; AWS:VPCFlowLogs; NSM:Flow; WinEventLog:Microsoft-Windows-SMBClient/Security; WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:shell; esxi:vmkernel; esxi:vob; macos:unifiedlog
+T1078,Valid Accounts,NSM:Connections; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; kubernetes:audit; macos:unifiedlog; saas:okta
+T1078.001,Default Accounts,AWS:CloudTrail; WinEventLog:Security; auditd:USER_LOGIN; esxi:auth; networkdevice:syslog
+T1078.002,Domain Accounts,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vpxd; linux:syslog; macos:unifiedlog
+T1078.003,Local Accounts,WinEventLog:Security; auditd:USER_LOGIN; linux:auth; macos:unifiedlog
+T1078.004,Cloud Accounts,AWS:CloudTrail; azure:signinlogs; gcp:audit; m365:signinlogs; m365:unified; saas:okta
+T1080,Taint Shared Content,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsevents; gcp:workspaceaudit; m365:defender; m365:unified; macos:unifiedlog
+T1082,System Information Discovery,AWS:CloudTrail; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:vmkernel; macos:unifiedlog; networkdevice:syslog
+T1083,File and Directory Discovery,WinEventLog:Security; WinEventLog:Sysmon; auditd:PATH; auditd:SYSCALL; esxi:hostd; esxi:shell; fs:fsusage; macos:unifiedlog; networkdevice:syslog
+T1087,Account Discovery,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; esxi:vpxd; gcp:audit; linux:Sysmon; m365:unified; macos:unifiedlog; saas:okta
+T1087.001,Local Account,WinEventLog:Sysmon; auditd:PATH; esxi:shell; linux:Sysmon; macos:unifiedlog; vpxd.log
+T1087.002,Domain Account,NSM:Flow; WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; linuxsyslog; macos:unifiedlog
+T1087.003,Email Account,WinEventLog:PowerShell; WinEventLog:Sysmon; azure:signinlogs; gcp:audit; m365:unified
+T1087.004,Cloud Account,AWS:CloudTrail; Google Admin Audit; Microsoft Entra ID Audit Logs; Microsoft Graph API Logs; WinEventLog:PowerShell; azure:activity; azure:signinlogs; m365:defender; saas:okta
+T1090,Proxy,NSM:Connections; NSM:Firewall; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; esxi:vmkernel; macos:unifiedlog; networkdevice:cli
+T1090.001,Internal Proxy,Firewall Audit Logs; NSM:Connections; NSM:Flow; WinEventLog:Sysmon; Windows Firewall Log; auditd:SYSCALL; esxi:shell; esxi:vmkernel; macos:osquery; macos:unifiedlog; networkdevice:cli
+T1090.002,External Proxy,Firewall Audit Logs; NSM:Flow; WinEventLog:Microsoft-Windows-Windows Defender/Operational; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; esxi:vmkernel; macos:osquery; macos:unifiedlog; networkdevice:syslog
+T1090.003,Multi-hop Proxy,NSM:Firewall; NSM:Flow; Netfilter/iptables; WinEventLog:Sysmon; auditd:SYSCALL; dns:query; esxi:esxupdate; esxi:vmkernel; macos:osquery; macos:unifiedlog; networkdevice:syslog
+T1090.004,Domain Fronting,NSM:Connections; NSM:Firewall; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; macos:osquery; macos:unifiedlog
+T1091,Replication Through Removable Media,WinEventLog:Microsoft-Windows-Windows Defender/Operational; WinEventLog:Sysmon; WinEventLog:System
+T1092,Communication Through Removable Media,WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; fs:fsusage; macos:unifiedlog
+T1095,Non-Application Layer Protocol,NSM:Firewall; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:vmkernel; macos:unifiedlog
+T1098,Account Manipulation,WinEventLog:Security; WinEventLog:Sysmon; auditd:PATH; auditd:SYSCALL; esxi:vpxa; m365:unified; macos:unifiedlog; saas:okta
+T1098.001,Additional Cloud Credentials,AWS:CloudTrail; azure:audit; gcp:audit; m365:unified
+T1098.002,Additional Email Delegate Permissions,WinEventLog:Security; m365:unified
+T1098.003,Additional Cloud Roles,AWS:CloudTrail; m365:audit; m365:unified
+T1098.004,SSH Authorized Keys,auditd:SYSCALL; esxi:shell; gcp:audit; macos:auth; macos:unifiedlog; networkdevice:cli
+T1098.005,Device Registration,ApplicationLog:EntraIDPortal; ApplicationLog:Intune/MDM Logs; WinEventLog:Security; azure:audit
+T1098.006,Additional Container Cluster Roles,kubernetes:audit
+T1098.007,Additional Local or Domain Groups,WinEventLog:Security; auditd:SYSCALL; macos:unifiedlog
+T1102,Web Service,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:vmkernel; macos:osquery; macos:unifiedlog; vpxd.log
+T1102.001,Dead Drop Resolver,NSM:Firewall; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:vobd; etw:Microsoft-Windows-NDIS-PacketCapture; macos:osquery; macos:unifiedlog
+T1102.002,Bidirectional Communication,NSM:Connections; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; etw:Microsoft-Windows-WinINet; macos:unifiedlog
+T1102.003,One-Way Communication,WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; etw:Microsoft-Windows-WinINet; iptables:LOG; macos:endpointsecurity; macos:unifiedlog
+T1104,Multi-Stage Channels,WinEventLog:Sysmon; auditd:SYSCALL; esxi:cron; esxi:hostd; iptables:LOG; macos:endpointsecurity; macos:unifiedlog
+T1105,Ingress Tool Transfer,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; iptables:LOG; macos:endpointsecurity; macos:unifiedlog; snmp:syslog
+T1106,Native API,WinEventLog:Sysmon; auditd:SYSCALL; macos:endpointsecurity; macos:unifiedlog
+T1110,Brute Force,WinEventLog:Security; auditd:USER_LOGIN; azure:signinlogs; m365:unified; macos:unifiedlog
+T1110.001,Password Guessing,GCPAuditLogs:login.googleapis.com; WinEventLog:Security; azure:signinlogs; linux:syslog; macos:unifiedlog; networkdevice:syslog
+T1110.002,Password Cracking,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; linux:syslog; macos:unifiedlog; networkdevice:syslog
+T1110.003,Password Spraying,WinEventLog:Security; azure:signinlogs; kubernetes:audit; linux:syslog; m365:exchange; macos:unifiedlog; networkdevice:syslog; saas:auth
+T1110.004,Credential Stuffing,AWS:CloudTrail; WinEventLog:Security; azure:signinlogs; kubernetes:apiserver; linux:syslog; m365:exchange; macos:unifiedlog; networkdevice:syslog; saas-app:auth
+T1111,Multi-Factor Authentication Interception,WinEventLog:Security; WinEventLog:Sysmon; linux:syslog; macos:osquery; macos:unifiedlog
+T1112,Modify Registry,WinEventLog:Sysmon
+T1113,Screen Capture,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1114,Email Collection,WinEventLog:Application; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:ad; linux:osquery; linux:syslog; m365:exchange; m365:unified; macos:endpointsecurity; macos:unifiedlog
+T1114.001,Local Email Collection,WinEventLog:Security; WinEventLog:Sysmon
+T1114.002,Remote Email Collection,WinEventLog:PowerShell; WinEventLog:Sysmon; azure:signinlogs; m365:purview; m365:unified
+T1114.003,Email Forwarding Rule,WinEventLog:PowerShell; WinEventLog:Security; auditd:SYSCALL; fs:plist_monitoring; linux:cli; m365:exchange; m365:messagetrace; m365:unified; macos:unifiedlog
+T1115,Clipboard Data,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1119,Automated Collection,WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; macos:unifiedlog
+T1120,Peripheral Device Discovery,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:osquery; macos:osquery; macos:unifiedlog
+T1123,Audio Capture,Apple TCC Logs; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; linux:Sysmon; macos:unifiedlog
+T1124,System Time Discovery,EDR:Telemetry; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:TaskScheduler; auditd:SYSCALL; esxi:hostd; esxi:shell; esxi:syslog; etw:Microsoft-Windows-Kernel-Process; linux:cron; linux:syslog; macos:unifiedlog; networkdevice:config; networkdevice:syslog
+T1125,Video Capture,NSM:Flow; WinEventLog:Microsoft-Windows-Windows Camera Frame Server/Operational; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:osquery; linux:syslog; macos:endpointsecurity; macos:unifiedlog
+T1127,Trusted Developer Utilities Proxy Execution,WinEventLog:AppLocker; WinEventLog:Security; WinEventLog:Sysmon
+T1127.001,MSBuild,EDR:AMSI; WinEventLog:Microsoft-Windows-CodeIntegrity/Operational; WinEventLog:Security; WinEventLog:Sysmon
+T1127.002,ClickOnce,WinEventLog:Microsoft-Windows-Security-Mitigations/KernelMode; WinEventLog:Security; WinEventLog:Sysmon
+T1127.003,JamPlus,WinEventLog:Microsoft-Windows-CodeIntegrity/Operational; WinEventLog:Security; WinEventLog:Sysmon
+T1129,Shared Modules,NSM:Flow; WinEventLog:Microsoft-Windows-CodeIntegrity/Operational; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; linux:syslog; macos:endpointsecurity; macos:unifiedlog
+T1132,Data Encoding,ESXiLogs:authlog; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; esxi:vmkernel; linux:syslog; macos:unifiedlog
+T1132.001,Standard Encoding,M365Defender:DeviceNetworkEvents; NSM:Flow; NSX:FlowLogs; PF:Logs; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:shell; macos:unifiedlog
+T1132.002,Non-Standard Encoding,NSM:Flow; PF:Logs; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:shell; m365:defender; macos:endpointsecurity
+T1133,External Remote Services,ApplicationLog:API; NSM:Connections; NSM:Flow; PF:Logs; WinEventLog:Application; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; kubernetes:audit; macos:unifiedlog
+T1134,Access Token Manipulation,ETW:Token; WinEventLog:Security; WinEventLog:Sysmon
+T1134.001,Token Impersonation/Theft,ETW:Token; WinEventLog:Security; WinEventLog:Sysmon
+T1134.002,Create Process with Token,ETW:ProcThread; WinEventLog:Security; WinEventLog:Sysmon
+T1134.003,Make and Impersonate Token,WinEventLog:Security; etw:Microsoft-Windows-Security-Auditing
+T1134.004,Parent PID Spoofing,WinEventLog:Security; etw:Microsoft-Windows-Kernel-Process
+T1134.005,SID-History Injection,WinEventLog:Security; etw:Microsoft-Windows-Directory-Services-SAM
+T1135,Network Share Discovery,NSM:Firewall; NSM:Flow; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; etw:Microsoft-Windows-RPC; macos:endpointsecurity; macos:unifiedlog
+T1136,Create Account,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:audit; macos:unifiedlog
+T1136.001,Local Account,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; ebpf:syscalls; esxi:vmkernel; macos:unifiedlog; networkdevice:syslog
+T1136.002,Domain Account,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1136.003,Cloud Account,AWS:CloudTrail; azure:audit; azure:signinlogs; m365:unified; saas:zoom
+T1137,Office Application Startup,WinEventLog:Application; WinEventLog:Sysmon; m365:mailboxaudit; m365:unified
+T1137.001,Office Template Macros,WinEventLog:Microsoft-Office-Alerts; WinEventLog:Sysmon; m365:unified
+T1137.002,Office Test,WinEventLog:Microsoft-Office-Alerts; WinEventLog:Sysmon; m365:office; m365:unified
+T1137.003,Outlook Forms,WinEventLog:Application; WinEventLog:PowerShell; WinEventLog:Sysmon; m365:messagetrace; m365:unified
+T1137.004,Outlook Home Page,WinEventLog:Application; WinEventLog:PowerShell; WinEventLog:Sysmon; m365:messagetrace; m365:unified
+T1137.005,Outlook Rules,WinEventLog:Application; WinEventLog:PowerShell; WinEventLog:Sysmon; m365:messagetrace; m365:unified
+T1137.006,Add-ins,WinEventLog:Application; WinEventLog:Microsoft-Office/OutlookAddinMonitor; WinEventLog:Sysmon
+T1140,Deobfuscate/Decode Files or Information,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1176,Software Extensions,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fs:fileevents; macos:unifiedlog
+T1176.001,Browser Extensions,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1176.002,IDE Extensions,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1185,Browser Session Hijacking,WinEventLog:Security; WinEventLog:Sysmon
+T1187,Forced Authentication,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon
+T1189,Drive-by Compromise,AWS:CloudTrail; NSM:Connections; NSM:Flow; WinEventLog:Application; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; etw:Microsoft-Windows-Kernel-Process; linux:Sysmon; linux:syslog; m365:unified; macos:unifiedlog; saas:auth
+T1190,Exploit Public-Facing Application,ALB:HTTPLogs; AWS:VPCFlowLogs; ApplicationLog:IIS; ApplicationLog:Ingress; ApplicationLog:WebServer; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; docker:events; esxi:hostd; macos:unifiedlog; networkdevice:controlplane
+T1195,Supply Chain Compromise,NSM:Flow; WinEventLog:Microsoft-Windows-CodeIntegrity/Operational; WinEventLog:Sysmon; auditd:SYSCALL; journald:package; macos:endpointsecurity; macos:osquery; macos:unifiedlog
+T1195.001,Compromise Software Dependencies and Development Tools,NSM:Flow; WinEventLog:Microsoft-Windows-CodeIntegrity/Operational; WinEventLog:Sysmon; auditd:SYSCALL; journald:package; macos:endpointsecurity; macos:unifiedlog
+T1195.002,Compromise Software Supply Chain,NSM:Flow; WinEventLog:Microsoft-Windows-CodeIntegrity/Operational; WinEventLog:Sysmon; auditd:SYSCALL; journald:package; macos:endpointsecurity; macos:unifiedlog
+T1195.003,Compromise Hardware Supply Chain,WinEventLog:Microsoft-Windows-CodeIntegrity/Operational; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fwupd:logs; macos:endpointsecurity; macos:unifiedlog
+T1197,BITS Jobs,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System
+T1199,Trusted Relationship,AWS:CloudTrail; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:audit; azure:signinlogs; gcp:audit; linux:syslog; m365:unified; macos:unifiedlog; saas:googleworkspace; saas:salesforce
+T1200,Hardware Additions,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; linux:syslog; macos:unifiedlog; wineventlog:dhcp
+T1201,Password Policy Discovery,AWS:CloudTrail; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:audit; linux:syslog; m365:unified; macos:MDM; macos:unifiedlog; networkdevice:syslog
+T1202,Indirect Command Execution,WinEventLog:Sysmon
+T1203,Exploitation for Client Execution,NSM:Connections; NetFlow:Flow; WinEventLog:Application; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsevents; linux:syslog; macos:osquery; macos:unifiedlog
+T1204,User Execution,AWS:CloudTrail; NSM:Flow; WinEventLog:Application; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; docker:events; fs:fileevents; gcp:vpcflow; linux:syslog; macos:osquery; macos:unifiedlog
+T1204.001,Malicious Link,NSM:Connections; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsevents; macos:unifiedlog
+T1204.002,Malicious File,WinEventLog:Sysmon; auditd:SYSCALL; macos:endpointsecurity; macos:unifiedlog
+T1204.003,Malicious Image,AWS:CloudTrail; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; azure:activity; containerd:events; kubernetes:audit; kubernetes:events
+T1204.004,Malicious Copy and Paste,NSM:Flow; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1204.005,Malicious Library,NSM:Flow; WinEventLog:Sysmon; auditd:PATH; auditd:SYSCALL; macos:unifiedlog
+T1205,Traffic Signaling,NSM:Flow; WinEventLog:Microsoft-Windows-Windows Firewall With Advanced Security/Firewall; WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog; networkdevice:syslog
+T1205.001,Port Knocking,NSM:Flow; WinEventLog:Microsoft-Windows-Windows Firewall With Advanced Security/Firewall; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog; networkdevice:syslog
+T1205.002,Socket Filters,NSM:Flow; OpenBSM:AuditTrail; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; linux:osquery; macos:unifiedlog
+T1207,Rogue Domain Controller,NSM:Flow; WinEventLog:Security; m365:dirsync
+T1210,Exploitation of Remote Services,NSM:Flow; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; esxi:hostd; linux:syslog; macos:osquery; macos:unifiedlog
+T1211,Exploitation for Stealth,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; m365:unified; macos:osquery; macos:unifiedlog
+T1212,Exploitation for Credential Access,NSM:Connections; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; m365:unified; macos:osquery; macos:unifiedlog
+T1213,Data from Information Repositories,WinEventLog:Security; auditd:SYSCALL; linux:Sysmon; m365:unified; macos:osquery; macos:unifiedlog; saas:confluence; saas:slack
+T1213.001,Confluence,saas:confluence
+T1213.002,Sharepoint,azure:signinlogs; m365:sharepoint; m365:unified
+T1213.003,Code Repositories,saas:github
+T1213.004,Customer Relationship Management Software,m365:signinlogs; saas:salesforce
+T1213.005,Messaging Applications,m365:signinlogs; m365:unified; saas:slack
+T1213.006,Databases,AWS:CloudTrail; AWS:VPCFlowLogs; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:PATH; auditd:SYSCALL; m365:unified; macos:unifiedlog; saas:Snowflake
+T1216,System Script Proxy Execution,WinEventLog:PowerShell; WinEventLog:Sysmon
+T1216.001,PubPrn,WinEventLog:PowerShell; WinEventLog:Sysmon
+T1216.002,SyncAppvPublishingServer,WinEventLog:PowerShell; WinEventLog:Sysmon
+T1217,Browser Information Discovery,WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:osquery; macos:unifiedlog
+T1218,System Binary Proxy Execution,WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1218.001,Compiled HTML File,WinEventLog:Sysmon
+T1218.002,Control Panel,WinEventLog:Sysmon
+T1218.003,CMSTP,WinEventLog:PowerShell; WinEventLog:Sysmon
+T1218.004,InstallUtil,WinEventLog:PowerShell; WinEventLog:Sysmon
+T1218.005,Mshta,WinEventLog:Security; WinEventLog:Sysmon
+T1218.007,Msiexec,WinEventLog:Security; WinEventLog:Sysmon
+T1218.008,Odbcconf,WinEventLog:Security; WinEventLog:Sysmon
+T1218.009,Regsvcs/Regasm,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon
+T1218.010,Regsvr32,WinEventLog:Security; WinEventLog:Sysmon
+T1218.011,Rundll32,WinEventLog:Sysmon
+T1218.012,Verclsid,WinEventLog:Sysmon
+T1218.013,Mavinject,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon
+T1218.014,MMC,WinEventLog:Microsoft-Windows-COM/Operational; WinEventLog:PowerShell; WinEventLog:Sysmon
+T1218.015,Electron Applications,WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1219,Remote Access Tools,WinEventLog:Sysmon; WinEventLog:System; auditd:PATH; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1219.001,IDE Tunneling,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1219.002,Remote Desktop Software,NSM:Flow; WinEventLog:Microsoft-Windows-Windows Firewall With Advanced Security/Firewall; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1219.003,Remote Access Hardware,WinEventLog:System; auditd:SYSCALL; macos:unifiedlog
+T1220,XSL Script Processing,WinEventLog:Sysmon
+T1221,Template Injection,WinEventLog:Sysmon
+T1222,File and Directory Permissions Modification,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:PROCTITLE; auditd:SYSCALL; esxi:hostd; esxi:shell; esxi:vpxd; fs:fsevents; macos:unifiedlog
+T1222.001,Windows Permissions,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:WMI
+T1222.002,Linux and Mac Permissions,OpenBSM:AuditTrail; auditd:PROCTITLE; auditd:SYSCALL; fs:fsevents; linux:osquery; macos:unifiedlog
+T1480,Execution Guardrails,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:WMI; auditd:PROCTITLE; auditd:SYSCALL; esxi:hostd; esxi:shell; fs:fileevents; linux:syslog; macos:unifiedlog
+T1480.001,Environmental Keying,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:WMI; auditd:SYSCALL; fs:fsevents; linux:osquery; linux:syslog; macos:unifiedlog
+T1480.002,Mutual Exclusion,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1482,Domain Trust Discovery,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon
+T1484,Domain or Tenant Policy Modification,WinEventLog:Security; WinEventLog:Sysmon; azure:signinlogs; m365:unified
+T1484.001,Group Policy Modification,WinEventLog:Security; WinEventLog:Sysmon
+T1484.002,Trust Modification,WinEventLog:Security; WinEventLog:Sysmon; azure:signinlogs; m365:unified
+T1485,Data Destruction,AWS:CloudTrail; WinEventLog:Sysmon; auditd:SYSCALL; docker:events; esxi:vmkernel; macos:unifiedlog
+T1485.001,Lifecycle-Triggered Deletion,AWS:CloudTrail
+T1486,Data Encrypted for Impact,AWS:CloudTrail; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; esxi:vmkernel; macos:unifiedlog
+T1489,Service Stop,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; esxi:hostd; linux:syslog; macos:unifiedlog
+T1490,Inhibit System Recovery,AWS:CloudTrail; WinEventLog:Microsoft-Windows-Backup; WinEventLog:Sysmon; WinEventLog:System; auditd:CONFIG_CHANGE; auditd:SYSCALL; esxi:hostd; networkdevice:syslog
+T1491,Defacement,AWS:CloudTrail; CloudTrail:PutObject; WinEventLog:Application; WinEventLog:Security; WinEventLog:Sysmon; apache:access_log; auditd:SYSCALL; esxi:vmkernel; linux:syslog; macos:unifiedlog
+T1491.001,Internal Defacement,ESXiLogs:messages; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; linux:syslog; macos:unifiedlog
+T1491.002,External Defacement,AWS:CloudTrail; NSM:Connections; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1495,Firmware Corruption,NSM:Flow; WinEventLog:Microsoft-Windows-Kernel-Boot; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog; networkdevice:firmware
+T1496,Resource Hijacking,AWS:CloudTrail; AWS:CloudWatch; AWS:VPCFlowLogs; NSM:Flow; WinEventLog:Sysmon; Windows:perfmon; auditd:SYSCALL; container:cni; containerd:events; linux:procfs; m365:unified; macos:unifiedlog; prometheus:metrics; saas:application
+T1496.001,Compute Hijacking,AWS:CloudTrail; AWS:CloudWatch; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; containerd:events; linux:cron; macos:unifiedlog
+T1496.002,Bandwidth Hijacking,AWS:CloudTrail; AWS:VPCFlowLogs; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; containers:osquery; docker:stats; macos:unifiedlog
+T1496.003,SMS Pumping,saas:application; saas:audit
+T1496.004,Cloud Service Hijacking,AWS:CloudTrail
+T1497,Virtualization/Sandbox Evasion,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1497.001,System Checks,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1497.002,User Activity Based Checks,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1497.003,Time Based Checks,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1498,Network Denial of Service,NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL
+T1498.001,Direct Network Flood,AWS:CloudWatch; AWS:VPCFlowLogs; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1498.002,Reflection Amplification,AWS:CloudTrail; AWS:CloudWatch; AWS:VPCFlowLogs; NSM:Flow; WinEventLog:Sysmon; Windows:perfmon; auditd:SYSCALL; macos:unifiedlog; sar:network
+T1499,Endpoint Denial of Service,AWS:CloudTrail; AWS:CloudWatch; VPCFlowLogs:All; WinEventLog:Application; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; docker:events; journald:systemd; kubernetes:events; linux:syslog; macos:unifiedlog
+T1499.001,OS Exhaustion Flood,NSM:Firewall; NSM:Flow; WinEventLog:Microsoft-Windows-TCPIP; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1499.002,Service Exhaustion Flood,AWS:CloudTrail; AWS:CloudWatch; AWS:VPCFlowLogs; NSM:Flow; WinEventLog:Application; WinEventLog:Sysmon; Windows:perfmon; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1499.003,Application Exhaustion Flood,AWS:CloudMetrics; AWS:CloudTrail; AWS:CloudWatch; NSM:Flow; WinEventLog:Application; WinEventLog:Sysmon; Windows:perfmon; auditd:SYSCALL; linux:syslog; macos:osquery; macos:unifiedlog
+T1499.004,Application or System Exploitation,AWS:CloudTrail; AWS:CloudWatch; AWS:VPCFlowLogs; NSM:Flow; WinEventLog:Application; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; journald:Application; macos:unifiedlog
+T1505,Server Software Component,NSM:Flow; WinEventLog:Application; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; linux:syslog; macos:unifiedlog
+T1505.001,SQL Stored Procedures,ApplicationLogs:SQL; WinEventLog:Application; WinEventLog:Sysmon; auditd:SYSCALL
+T1505.002,Transport Agent,WinEventLog:Application; WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; linux:Sysmon; linux:syslog
+T1505.003,Web Shell,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1505.004,IIS Components,WinEventLog:Microsoft-IIS-Configuration; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System
+T1505.005,Terminal Services DLL,WinEventLog:Security; WinEventLog:Sysmon
+T1505.006,vSphere Installation Bundles,esxi:esxupdate; esxi:shell; linux:fim
+T1518,Software Discovery,AWS:CloudTrail; WinEventLog:PowerShell; WinEventLog:Security; auditd:SYSCALL; esxi:hostd; esxi:shell; linux:shell; macos:unifiedlog
+T1518.001,Security Software Discovery,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1518.002,Backup Software Discovery,WinEventLog:Security; WinEventLog:Sysmon; auditd:PATH; auditd:SYSCALL; macos:unifiedlog
+T1525,Implant Internal Image,AWS:CloudTrail; docker:daemon; docker:registry
+T1526,Cloud Service Discovery,AWS:CloudTrail; azure:audit; azure:signinlogs; m365:signinlogs; m365:unified; saas:adminapi; saas:auth
+T1528,Steal Application Access Token,AWS:CloudTrail; azure:audit; kubernetes:audit; m365:unified; saas:googleworkspace; saas:slack
+T1529,System Shutdown/Reboot,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:shell; linux:syslog; macos:unifiedlog; networkdevice:syslog
+T1530,Data from Cloud Storage,AWS:CloudTrail; AWS:VPCFlowLogs; azure:signinlogs; m365:sharepoint; m365:unified
+T1531,Account Access Removal,NSM:Connections; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; esxi:vpxa; m365:signinlogs; m365:unified; macos:unifiedlog; saas:okta
+T1534,Internal Spearphishing,Application:Mail; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; m365:unified; macos:unifiedlog; saas:slack
+T1535,Unused/Unsupported Cloud Regions,AWS:CloudTrail; AWS:VPCFlowLogs; CloudTrail:GetCallerIdentity
+T1537,Transfer Data to Cloud Account,AWS:CloudTrail; AWS:VPCFlowLogs; m365:unified; saas:box; saas:googledrive
+T1538,Cloud Service Dashboard,AWS:CloudTrail; azure:signinlogs; m365:signinlogs; m365:unified; saas:box; saas:okta; saas:salesforce; saas:zoom
+T1539,Steal Web Session Cookie,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; m365:unified; macos:unifiedlog; saas:googleworkspace; saas:okta
+T1542,Pre-OS Boot,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog; networkdevice:config; networkdevice:firmware
+T1542.001,System Firmware,WinEventLog:Security; WinEventLog:Sysmon; networkdevice:config; networkdevice:runtime
+T1542.002,Component Firmware,WinEventLog:Sysmon; auditd:SYSCALL; firmware:integrity ; linux:syslog; macos:unifiedlog
+T1542.003,Bootkit,WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog
+T1542.004,ROMMONkit,NSM:Flow; networkdevice:config; networkdevice:syslog
+T1542.005,TFTP Boot,NSM:Flow; networkdevice:config; networkdevice:syslog
+T1543,Create or Modify System Process,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; docker:events; fs:fsusage; macos:unifiedlog
+T1543.001,Launch Agent,fs:fsusage; macos:osquery; macos:unifiedlog
+T1543.002,Systemd Service,auditd:SYSCALL; linux:osquery
+T1543.003,Windows Service,WinEventLog:Security; WinEventLog:Sysmon
+T1543.004,Launch Daemon,fs:launchdaemons; macos:unifiedlog
+T1543.005,Container Service,auditd:SYSCALL; kubernetes:audit; systemd:unit
+T1546,Event Triggered Execution,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:WMI; auditd:SYSCALL; linux:syslog; m365:office; m365:unified; macos:unifiedlog
+T1546.001,Change Default File Association,WinEventLog:Security; WinEventLog:Sysmon
+T1546.002,Screensaver,WinEventLog:Security; WinEventLog:Sysmon
+T1546.003,Windows Management Instrumentation Event Subscription,WinEventLog:Sysmon; WinEventLog:WMI
+T1546.004,Unix Shell Configuration Modification,NSM:Flow; auditd:EXECVE; auditd:SYSCALL; macos:endpointsecurity; macos:unifiedlog
+T1546.005,Trap,auditd:SYSCALL; macos:unifiedlog
+T1546.006,LC_LOAD_DYLIB Addition,macos:unifiedlog
+T1546.007,Netsh Helper DLL,WinEventLog:Security; WinEventLog:Sysmon
+T1546.008,Accessibility Features,WinEventLog:Sysmon
+T1546.009,AppCert DLLs,WinEventLog:Security; WinEventLog:Sysmon
+T1546.010,AppInit DLLs,WinEventLog:Sysmon
+T1546.011,Application Shimming,WinEventLog:Security; WinEventLog:Sysmon
+T1546.012,Image File Execution Options Injection,WinEventLog:Security; WinEventLog:Sysmon
+T1546.013,PowerShell Profile,WinEventLog:PowerShell; WinEventLog:Sysmon
+T1546.014,Emond,macos:unifiedlog
+T1546.015,Component Object Model Hijacking,WinEventLog:Security; WinEventLog:Sysmon
+T1546.016,Installer Packages,WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1546.017,Udev Rules,auditd:CONFIG_CHANGE; auditd:SYSCALL
+T1546.018,Python Startup Hooks,NSM:Flow; auditd:CONFIG_CHANGE; auditd:PATH; auditd:SYSCALL
+T1547,Boot or Logon Autostart Execution,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1547.001,Registry Run Keys / Startup Folder,WinEventLog:Microsoft-Windows-Shell-Core; WinEventLog:Sysmon
+T1547.002,Authentication Package,WinEventLog:Security; WinEventLog:Sysmon
+T1547.003,Time Providers,WinEventLog:Sysmon
+T1547.004,Winlogon Helper DLL,Autoruns:RegistryScan; WinEventLog:Security; WinEventLog:Sysmon
+T1547.005,Security Support Provider,WinEventLog:Security; WinEventLog:Sysmon
+T1547.006,Kernel Modules and Extensions,auditd:SYSCALL; linux:osquery; macos:osquery; macos:unifiedlog
+T1547.007,Re-opened Applications,fs:filesystem; macos:endpointsecurity; macos:unifiedlog
+T1547.008,LSASS Driver,WinEventLog:Security; WinEventLog:Sysmon
+T1547.009,Shortcut Modification,WinEventLog:Sysmon
+T1547.010,Port Monitors,WinEventLog:Application; WinEventLog:Sysmon
+T1547.012,Print Processors,WinEventLog:Sysmon
+T1547.013,XDG Autostart Entries,auditd:EXECVE; auditd:SYSCALL; linux:auth; linux:osquery
+T1547.014,Active Setup,WinEventLog:Security; WinEventLog:Sysmon
+T1547.015,Login Items,macos:unifiedlog
+T1548,Abuse Elevation Control Mechanism,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; fs:fsusage; macos:unifiedlog
+T1548.001,Setuid and Setgid,auditd:SYSCALL; macos:unifiedlog
+T1548.002,Bypass User Account Control,WinEventLog:Security; WinEventLog:Sysmon
+T1548.003,Sudo and Sudo Caching,auditd:SYSCALL; macos:unifiedlog
+T1548.004,Elevated Execution with Prompt,macos:unifiedlog
+T1548.005,Temporary Elevated Cloud Access,AWS:CloudTrail; gcp:iam; gcp:workspaceaudit; m365:signinlogs; m365:unified
+T1548.006,TCC Manipulation,macos:unifiedlog
+T1550,Use Alternate Authentication Material,AWS:CloudTrail; NSM:Connections; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; docker:runtime; m365:unified; saas:googleworkspace
+T1550.001,Application Access Token,AWS:CloudTrail; azure:signinlogs; kubernetes:apiserver; m365:unified; saas:googleworkspace; saas:salesforce
+T1550.002,Pass the Hash,WinEventLog:Security; WinEventLog:Sysmon
+T1550.003,Pass the Ticket,WinEventLog:Security; WinEventLog:Sysmon
+T1550.004,Web Session Cookie,AWS:CloudTrail; m365:unified; saas:okta
+T1552,Unsecured Credentials,AWS:CloudTrail; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; containerd:Events; linux:syslog; macos:unifiedlog; saas:googleworkspace; saas:zoom
+T1552.001,Credentials In Files,AWS:CloudTrail; CloudTrail:GetObject; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; cni:netflow; ebpf:syscalls; kubernetes:audit; linux:syslog; macos:unifiedlog
+T1552.002,Credentials in Registry,EDR:hunting; WinEventLog:Sysmon
+T1552.003,Shell History,auditd:EXECVE; auditd:SYSCALL; macos:endpointsecurity; macos:unifiedlog
+T1552.004,Private Keys,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog; networkdevice:syslog
+T1552.005,Cloud Instance Metadata API,AWS:CloudTrail; AWS:VPCFlowLogs; ebpf:syscalls
+T1552.006,Group Policy Preferences,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon
+T1552.007,Container API,docker:api; kubernetes:apiserver; kubernetes:orchestrator
+T1552.008,Chat Messages,m365:unified; saas:okta; saas:slack
+T1553,Subvert Trust Controls,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1553.001,Gatekeeper Bypass,macos:osquery; macos:unifiedlog
+T1553.002,Code Signing,WinEventLog:Security; WinEventLog:Sysmon; macos:unifiedlog
+T1553.003,SIP and Trust Provider Hijacking,WinEventLog:CodeIntegrity; WinEventLog:Security; WinEventLog:Sysmon
+T1553.004,Install Root Certificate,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1553.005,Mark-of-the-Web Bypass,WinEventLog:Security; WinEventLog:Sysmon
+T1553.006,Code Signing Policy Modification,WinEventLog:Security; macos:unifiedlog
+T1554,Compromise Host Software Binary,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:unifiedlog
+T1555,Credentials from Password Stores,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog
+T1555.001,Keychain,macos:unifiedlog
+T1555.002,Securityd Memory,auditd:EXECVE; auditd:FILE; auditd:SYSCALL; macos:unifiedlog
+T1555.003,Credentials from Web Browsers,WinEventLog:Security; WinEventLog:Sysmon; auditd:FILE; auditd:SYSCALL; macos:unifiedlog
+T1555.004,Windows Credential Manager,WinEventLog:Security; WinEventLog:Sysmon
+T1555.005,Password Managers,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1555.006,Cloud Secrets Management Stores,AWS:CloudTrail
+T1556,Modify Authentication Process,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:policy; m365:unified; macos:osquery; macos:unifiedlog
+T1556.001,Domain Controller Authentication,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System
+T1556.002,Password Filter DLL,WinEventLog:Security; WinEventLog:Sysmon
+T1556.003,Pluggable Authentication Modules,NSM:Connections; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1556.004,Network Device Authentication,network:auth; networkconfig
+T1556.005,Reversible Encryption,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon
+T1556.006,Multi-Factor Authentication,AWS:CloudTrail; NSM:Connections; WinEventLog:PowerShell; WinEventLog:Security; auditd:SYSCALL; azure:signinlogs; m365:unified; macos:unifiedlog; saas:zoom
+T1556.007,Hybrid Identity,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; azure:signinlogs; m365:unified; saas:okta
+T1556.008,Network Provider DLL,WinEventLog:Security; WinEventLog:Sysmon
+T1556.009,Conditional Access Policies,AWS:CloudTrail; azure:activity; saas:okta
+T1557,Adversary-in-the-Middle,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog; networkdevice:config
+T1557.001,Name Resolution Poisoning and SMB Relay,NSM:Flow; WinEventLog:Security
+T1557.002,ARP Cache Poisoning,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1557.003,DHCP Spoofing,NSM:Flow; WinEventLog:System; linux:syslog; macos:unifiedlog
+T1557.004,Evil Twin,NSM:Flow; WLANLogs:Association; networkdevice:syslog
+T1558,Steal or Forge Kerberos Tickets,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1558.001,Golden Ticket,WinEventLog:Security; WinEventLog:Sysmon
+T1558.002,Silver Ticket,WinEventLog:Kerberos; WinEventLog:Security; WinEventLog:Sysmon
+T1558.003,Kerberoasting,WinEventLog:Security; WinEventLog:Sysmon
+T1558.004,AS-REP Roasting,WinEventLog:Security; WinEventLog:Sysmon
+T1558.005,Ccache Files,auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1559,Inter-Process Communication,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1559.001,Component Object Model,WinEventLog:Security; WinEventLog:Sysmon
+T1559.002,Dynamic Data Exchange,WinEventLog:Security; WinEventLog:Sysmon
+T1559.003,XPC Services,macos:unifiedlog
+T1560,Archive Collected Data,WinEventLog:Security; WinEventLog:Sysmon; auditd:FILE; auditd:SYSCALL; macos:unifiedlog
+T1560.001,Archive via Utility,WinEventLog:Security; WinEventLog:Sysmon; auditd:FILE; auditd:SYSCALL; macos:unifiedlog
+T1560.002,Archive via Library,WinEventLog:Security; WinEventLog:Sysmon; auditd:FILE; auditd:MMAP; auditd:SYSCALL; macos:unifiedlog
+T1560.003,Archive via Custom Method,WinEventLog:Security; WinEventLog:Sysmon; auditd:FILE; auditd:SYSCALL; linux:osquery; macos:unifiedlog
+T1561,Disk Wipe,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog; networkdevice:cli; networkdevice:syslog
+T1561.001,Disk Content Wipe,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog; networkdevice:cli; networkdevice:syslog
+T1561.002,Disk Structure Wipe,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog; networkdevice:cli; networkdevice:syslog
+T1563,Remote Service Session Hijacking,NSM:Connections; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1563.001,SSH Hijacking,NSM:Connections; auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog
+T1563.002,RDP Hijacking,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System
+T1564,Hide Artifacts,WinEventLog:Sysmon; auditd:EXECVE; auditd:FILE; esxi:shell; esxi:syslog; m365:unified; macos:unifiedlog
+T1564.001,Hidden Files and Directories,WinEventLog:Sysmon; auditd:EXECVE; auditd:FILE; macos:unifiedlog
+T1564.002,Hidden Users,WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:FILE; macos:unifiedlog
+T1564.003,Hidden Window,WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog
+T1564.004,NTFS File Attributes,WinEventLog:Sysmon; etw:Microsoft-Windows-Kernel-File
+T1564.005,Hidden File System,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; etw:Microsoft-Windows-Kernel-Storage; linux:syslog; macos:unifiedlog
+T1564.006,Run Virtual Instance,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:unifiedlog
+T1564.007,VBA Stomping,WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1564.008,Email Hiding Rules,ApplicationLog:MailServer; WinEventLog:PowerShell; auditd:SYSCALL; m365:unified; macos:unifiedlog
+T1564.009,Resource Forking,macos:unifiedlog
+T1564.010,Process Argument Spoofing,WinEventLog:Security; WinEventLog:Sysmon
+T1564.011,Ignore Process Interrupts,WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1564.012,File/Path Exclusions,WinEventLog:Security; WinEventLog:Sysmon; auditd:PATH; auditd:SYSCALL; macos:unifiedlog
+T1564.013,Bind Mounts,auditd:PATH; auditd:SYSCALL; linux:osquery
+T1564.014,Extended Attributes,auditd:EXECVE; auditd:SYSCALL; macos:unifiedlog
+T1565,Data Manipulation,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:osquery; macos:unifiedlog
+T1565.001,Stored Data Manipulation,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:osquery; macos:unifiedlog
+T1565.002,Transmitted Data Manipulation,WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:osquery; macos:unifiedlog
+T1565.003,Runtime Data Manipulation,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:osquery; macos:unifiedlog
+T1566,Phishing,Application:Mail; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; m365:unified; macos:unifiedlog; saas:collaboration
+T1566.001,Spearphishing Attachment,Application:Mail; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; m365:unified; macos:unifiedlog
+T1566.002,Spearphishing Link,Application:Mail; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; m365:unified; macos:unifiedlog
+T1566.003,Spearphishing via Service,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1566.004,Spearphishing Voice,ApplicationLog:CallRecords; m365:unified; macos:unifiedlog; networkdevice:syslog
+T1567,Exfiltration Over Web Service,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; m365:unified; macos:unifiedlog; saas:box
+T1567.001,Exfiltration to Code Repository,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:unifiedlog
+T1567.002,Exfiltration to Cloud Storage,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:unifiedlog
+T1567.003,Exfiltration to Text Storage Sites,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:unifiedlog
+T1567.004,Exfiltration Over Webhook,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; m365:unified; macos:unifiedlog; saas:api
+T1568,Dynamic Resolution,WinEventLog:Sysmon; auditd:SYSCALL; esxi:syslog; linux:syslog; macos:unifiedlog
+T1568.001,Fast Flux DNS,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:syslog; macos:unifiedlog
+T1568.002,Domain Generation Algorithms,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:syslog; linux:syslog; macos:unifiedlog
+T1568.003,DNS Calculation,WinEventLog:Sysmon; auditd:SYSCALL; esxi:syslog; linux:syslog; macos:unifiedlog
+T1569,System Services,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1569.001,Launchctl,macos:unifiedlog
+T1569.002,Service Execution,WinEventLog:Security; WinEventLog:Sysmon
+T1569.003,Systemctl,auditd:CONFIG_CHANGE; auditd:EXECVE; auditd:SYSCALL
+T1570,Lateral Tool Transfer,WinEventLog:Security; WinEventLog:Sysmon; auditd:FILE; auditd:SYSCALL; esxi:hostd; esxi:vmkernel; macos:unifiedlog
+T1571,Non-Standard Port,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxcli:network; esxi:vpxd; linux:osquery; linux:syslog; macos:unifiedlog
+T1572,Protocol Tunneling,WinEventLog:Sysmon; auditd:SYSCALL; esxcli:network; esxi:vpxd; linux:osquery; linux:syslog; macos:unifiedlog
+T1573,Encrypted Channel,NSM:Connections; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxi:vmkernel; esxi:vpxd; linux:osquery; linux:syslog; macos:unifiedlog
+T1573.001,Symmetric Cryptography,NSM:Connections; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxcli:network; esxi:vpxd; linux:osquery; linux:syslog; macos:unifiedlog
+T1573.002,Asymmetric Cryptography,IDS:TLSInspection; NSM:Flow; WinEventLog:Sysmon; auditd:SYSCALL; esxcli:network; esxi:vpxd; linux:osquery; linux:syslog; macos:unifiedlog
+T1574,Hijack Execution Flow,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:osquery; linux:syslog; macos:unifiedlog
+T1574.001,DLL,WinEventLog:Security; WinEventLog:Sysmon
+T1574.004,Dylib Hijacking,macos:unifiedlog
+T1574.005,Executable Installer File Permissions Weakness,WinEventLog:Sysmon
+T1574.006,Dynamic Linker Hijacking,auditd:PATH; auditd:SYSCALL; linux:osquery; macos:unifiedlog
+T1574.007,Path Interception by PATH Environment Variable,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:osquery; macos:unifiedlog
+T1574.008,Path Interception by Search Order Hijacking,WinEventLog:Sysmon
+T1574.009,Path Interception by Unquoted Path,WinEventLog:Security; WinEventLog:Sysmon
+T1574.010,Services File Permissions Weakness,WinEventLog:Sysmon; WinEventLog:System
+T1574.011,Services Registry Permissions Weakness,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System
+T1574.012,COR_PROFILER,WinEventLog:Security; WinEventLog:Sysmon
+T1574.013,KernelCallbackTable,WinEventLog:Sysmon; etw:Microsoft-Windows-Kernel-Process
+T1574.014,AppDomainManager,WinEventLog:Security; WinEventLog:Sysmon
+T1578,Modify Cloud Compute Infrastructure,AWS:CloudTrail; AWS:CloudWatch
+T1578.001,Create Snapshot,AWS:CloudTrail
+T1578.002,Create Cloud Instance,AWS:CloudTrail; azure:activity
+T1578.003,Delete Cloud Instance,AWS:CloudTrail; azure:activity
+T1578.004,Revert Cloud Instance,AWS:CloudTrail
+T1578.005,Modify Cloud Compute Configurations,AWS:CloudTrail
+T1580,Cloud Infrastructure Discovery,AWS:CloudTrail
+T1583,Acquire Infrastructure,Domain Name; Internet Scan
+T1583.001,Domains,Domain Name
+T1583.003,Virtual Private Server,Internet Scan
+T1583.004,Server,Internet Scan
+T1583.006,Web Services,Internet Scan
+T1583.007,Serverless,Internet Scan
+T1583.008,Malvertising,Internet Scan
+T1584,Compromise Infrastructure,Domain Name; Internet Scan
+T1584.001,Domains,Domain Name
+T1584.002,DNS Server,Domain Name
+T1584.003,Virtual Private Server,Internet Scan
+T1584.004,Server,Internet Scan
+T1584.006,Web Services,Internet Scan
+T1584.007,Serverless,Internet Scan
+T1584.008,Network Devices,Internet Scan
+T1585,Establish Accounts,Network Traffic; Persona
+T1585.001,Social Media Accounts,Network Traffic; Persona
+T1586,Compromise Accounts,Network Traffic; Persona
+T1586.001,Social Media Accounts,Network Traffic; Persona
+T1587,Develop Capabilities,Internet Scan; Malware Repository
+T1587.001,Malware,Malware Repository
+T1587.002,Code Signing Certificates,Malware Repository
+T1587.003,Digital Certificates,Internet Scan
+T1588,Obtain Capabilities,Certificate; Internet Scan; Malware Repository
+T1588.001,Malware,Malware Repository
+T1588.002,Tool,Malware Repository
+T1588.003,Code Signing Certificates,Malware Repository
+T1588.004,Digital Certificates,Certificate; Internet Scan
+T1589,Gather Victim Identity Information,Network Traffic
+T1589.002,Email Addresses,Network Traffic
+T1592,Gather Victim Host Information,Internet Scan
+T1592.001,Hardware,Internet Scan
+T1592.002,Software,Internet Scan
+T1592.004,Client Configurations,Internet Scan
+T1594,Search Victim-Owned Websites,Application Log
+T1595,Active Scanning,Network Traffic
+T1595.001,Scanning IP Blocks,Network Traffic
+T1595.002,Vulnerability Scanning,Network Traffic
+T1595.003,Wordlist Scanning,Network Traffic
+T1598,Phishing for Information,Application Log; Network Traffic
+T1598.001,Spearphishing Service,Application Log; Network Traffic
+T1598.002,Spearphishing Attachment,Application Log; Network Traffic
+T1598.003,Spearphishing Link,Application Log; Network Traffic
+T1598.004,Spearphishing Voice,Application Log
+T1599,Network Boundary Bridging,NSM:Flow; networkdevice:syslog
+T1599.001,Network Address Translation Traversal,NSM:Flow; networkdevice:config
+T1600,Weaken Encryption,NSM:Flow; networkdevice:config; snmp:status
+T1600.001,Reduce Key Space,NSM:Flow; networkdevice:cli; networkdevice:config
+T1600.002,Disable Crypto Hardware,NSM:Flow; networkdevice:cli; networkdevice:config
+T1601,Modify System Image,networkdevice:cli; networkdevice:config
+T1601.001,Patch System Image,firmware:runtime; networkdevice:cli; networkdevice:config
+T1601.002,Downgrade System Image,networkdevice:cli; networkdevice:config; networkdevice:syslog
+T1602,Data from Configuration Repository,NSM:Flow; networkdevice:syslog
+T1602.001,SNMP (MIB Dump),NSM:Flow; networkdevice:audit; networkdevice:syslog
+T1602.002,Network Device Configuration Dump,NSM:Flow; networkdevice:cli; networkdevice:syslog; snmp:access
+T1606,Forge Web Credentials,AWS:CloudTrail; NSM:Connections; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; azure:signinlogs; m365:oauth; m365:signinlogs; m365:unified; macos:unifiedlog; saas:auth
+T1606.001,Web Cookies,AWS:CloudTrail; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; m365:unified; macos:unifiedlog; saas:access
+T1606.002,SAML Tokens,AWS:CloudTrail; CloudTrail:Signin; WinEventLog:ADFS; WinEventLog:Security; azure:signinlogs; m365:exchange; m365:sharepoint; m365:unified; saas:access
+T1608,Stage Capabilities,Internet Scan
+T1608.001,Upload Malware,Internet Scan
+T1608.002,Upload Tool,Internet Scan
+T1608.003,Install Digital Certificate,Internet Scan
+T1608.004,Drive-by Target,Internet Scan
+T1608.005,Link Target,Internet Scan
+T1608.006,SEO Poisoning,Internet Scan
+T1609,Container Administration Command,docker:daemon; kubernetes:apiserver
+T1610,Deploy Container,containerd:runtime; docker:daemon; docker:events; ebpf:syscalls
+T1611,Escape to Host,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; docker:daemon; esxi:vmkernel; kubernetes:apiserver; linux:Sysmon
+T1612,Build Image on Host,NSM:Flow; docker:daemon
+T1613,Container and Resource Discovery,docker:daemon; kubernetes:apiserver
+T1614,System Location Discovery,AWS:CloudTrail; WinEventLog:Security; auditd:SYSCALL; azure:vpcflow; etw:Microsoft-Windows-Kernel-Base; linux:Sysmon; macos:osquery; macos:unifiedlog
+T1614.001,System Language Discovery,ETW; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:Sysmon; macos:osquery; macos:unifiedlog
+T1615,Group Policy Discovery,NSM:Flow; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon
+T1619,Cloud Storage Object Discovery,AWS:CloudTrail
+T1620,Reflective Code Loading,WinEventLog:Sysmon; auditd:MMAP; auditd:SYSCALL; etw:Microsoft-Antimalware-Scan-Interface; etw:Microsoft-Windows-DotNETRuntime; macos:unifiedlog
+T1621,Multi-Factor Authentication Request Generation,AWS:CloudTrail; NSM:Connections; WinEventLog:Security; auditd:AUTH; azure:signinlogs; macos:unifiedlog; saas:okta
+T1622,Debugger Evasion,WinEventLog:Sysmon; auditd:SYSCALL; etw:Microsoft-Windows-Kernel-Process; macos:unifiedlog
+T1647,Plist File Modification,macos:unifiedlog
+T1648,Serverless Execution,AWS:CloudTrail; m365:exchange; m365:unified; saas:appsscript; saas:googledrive
+T1649,Steal or Forge Authentication Certificates,WinEventLog:Security; auditd:SYSCALL; azure:signinlogs; m365:unified; macos:keychain; macos:unifiedlog
+T1651,Cloud Administration Command,AWS:CloudTrail; azure:activity; azure:vmguest
+T1652,Device Driver Discovery,WinEventLog:Security; WinEventLog:Sysmon; auditd:FS; auditd:SYSCALL; macos:unifiedlog
+T1653,Power Settings,WinEventLog:Security; auditd:PATH; auditd:SYSCALL; macos:unifiedlog
+T1654,Log Enumeration,AWS:CloudTrail; WinEventLog:Security; auditd:PATH; auditd:SYSCALL; azure:activity; esxi:hostd; esxi:shell; macos:unifiedlog
+T1657,Financial Theft,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; m365:office; m365:unified; macos:unifiedlog; saas:finance
+T1659,Content Injection,NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; macos:unifiedlog
+T1665,Hide Infrastructure,NSM:Flow; WinEventLog:Security; auditd:SYSCALL; dns:query; esxi:vmkernel; macos:unifiedlog
+T1666,Modify Cloud Resource Hierarchy,AWS:CloudTrail
+T1667,Email Bombing,Application:Mail; WinEventLog:Sysmon; auditd:SYSCALL; fs:fsusage; m365:exchange; m365:unified; macos:unifiedlog
+T1668,Exclusive Control,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:osquery; macos:unifiedlog
+T1669,Wi-Fi Networks,NSM:Firewall; WIDS:AssociationLogs; WinEventLog:Microsoft-Windows-WLAN-AutoConfig; WinEventLog:Security; auditd:SYSCALL; linux:syslog; macos:osquery; macos:unifiedlog
+T1671,Cloud Application Integration,azure:audit; m365:unified; saas:audit; saas:integration
+T1673,Virtual Machine Discovery,WinEventLog:Security; auditd:SYSCALL; esxi:shell; macos:unifiedlog
+T1674,Input Injection,WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:System; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1675,ESXi Administration Command,esxi:hostd
+T1677,Poisoned Pipeline Execution,saas:PRMetadata; saas:RepoEvents; saas:github
+T1678,Delay Execution,WinEventLog:Sysmon; auditd:PROCTITLE; auditd:SYSCALL; macos:unifiedlog
+T1679,Selective Exclusion,WinEventLog:PowerShell; WinEventLog:Security
+T1680,Local Storage Discovery,WinEventLog:Sysmon; auditd:EXECVE; auditd:SYSCALL; esxi:auth; esxi:hostd; macos:unifiedlog
+T1684,Social Engineering,NSM:Connections; WinEventLog:Security; WinEventLog:Sysmon; auditd:EXECVE; auditd:PATH; m365:exchange; m365:teams; m365:unified; macos:unifiedlog; saas:okta; saas:slack; saas:zoom
+T1684.001,Impersonation,Application:Mail; WinEventLog:Security; auditd:SYSCALL; gcp:workspaceaudit; m365:unified; macos:unifiedlog
+T1684.002,Email Spoofing,linux:syslog; m365:messagetrace; macos:unifiedlog; saas:email
+T1685,Disable or Modify Tools,AWS:CloudTrail; WinEventLog:Sysmon; WinEventLog:System; auditd:CONFIG_CHANGE; auditd:SYSCALL; esxi:hostd; esxi:shell; kubernetes:audit; macos:unifiedlog; networkdevice:config; networkdevice:syslog
+T1685.001,Disable or Modify Windows Event Log,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System
+T1685.002,Disable or Modify Cloud Log,AWS:CloudTrail; azure:policy; gcp:config; m365:unified; saas:audit
+T1685.003,Modify or Spoof Tool UI,WinEventLog:Sysmon; WinEventLog:System; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1685.004,Disable or Modify Linux Audit System Log,auditd:EXECVE; auditd:FILE; auditd:SYSCALL; linux:syslog
+T1685.005,Clear Windows Event Logs,WinEventLog:Security; WinEventLog:Sysmon
+T1685.006,Clear Linux or Mac System Logs,auditd:SYSCALL; fs:fsusage; macos:unifiedlog
+T1686,Disable or Modify System Firewall,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; esxi:hostd; linux:osquery; macos:unifiedlog; networkdevice:cli
+T1686.001,Cloud Firewall,AWS:CloudTrail
+T1686.002,Network Device Firewall,NSM:Flow; networkdevice:Firewall
+T1686.003,Windows Host Firewall,WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System
+T1687,Exploitation for Defense Impairment,AWS:CloudTrail; NSM:Flow; WinEventLog:Security; WinEventLog:Sysmon; WinEventLog:System; auditd:DAEMON; auditd:EXECVE; m365:unified; macos:unifiedlog; saas:okta
+T1688,Safe Mode Boot,WinEventLog:Security; WinEventLog:Sysmon
+T1689,Downgrade Attack,WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; linux:syslog; macos:unifiedlog
+T1690,Prevent Command History Logging,WinEventLog:PowerShell; WinEventLog:Sysmon; auditd:SYSCALL; esxi:shell; linux:osquery; macos:unifiedlog; networkdevice:cli
+T1697,Steal Application Specific Passwords,azure:signinlogs; idp:audit; idp:authentication ; idp:session ; m365:unified; saas:audit; saas:audit ; saas:session 
+T1700,AI-Enabled Exfiltration,AWS:bedrock; WinEventLog:PowerShell; WinEventLog:Security; WinEventLog:Sysmon; auditd:SYSCALL; saas:audit
