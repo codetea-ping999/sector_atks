@@ -35,9 +35,9 @@ score_s(t) = (1 − β) × share_s(t) + β × p(t)
 
 検証記録の 1 行は「ある手順をある日に試した結果」です。防御・アラート・ログは別々の事実なので、`prevented`／`alerted`／`logged` の 3 つの真偽値で持ちます。`outcome`（防御された／検知された／ログのみ／ログなし）はその既定値を決めるだけです。`prevented` はアラートもログもなしが既定です。防御された操作にアラートやログが伴うとは限らないので、あった場合は列で明示します。
 
-同じ技術・手順の組は、基準日以前の最新の記録だけを使います。
+同じ技術・手順の組は、基準日以前の最新の記録だけを使います。「最新」は tested_at（UTC オフセット付きの日時）で決めます。同じ手順の記録が同じ日に複数あるとき、どれかに tested_at がない場合や、tested_at が同じ場合は、行の並び順で結果が変わってしまうのでエラーにします。
 
-証跡の列（run_id、rule_id、event_id、evidence_uri、verifier）も持ちます。既定では、event_id か evidence_uri のどちらかと verifier がそろった記録だけを検知・防御として数えます。数えなかった件数は「証跡のない検知」として表示します。`--allow-unverified` で自己申告も数えられますが、その場合は VDC を「検証済み」と呼べません。証跡は `match-evidence` で、実行記録と SIEM/EDR のエクスポートを突き合わせて埋めます（[redteam_integration.md](redteam_integration.md)）。
+証跡の列（run_id、rule_id、event_id、evidence_uri、verifier）も持ちます。既定では、event_id か evidence_uri のどちらかと verifier がそろった記録だけを検知・防御として数えます。数えなかった件数は「証跡のない検知」として表示します。照合が曖昧な記録（`match_status=ambiguous`）は数えません。防御率・ログ率も既定は証跡のあるものだけで、記録上の値は別に表示します。`--allow-unverified` で自己申告も数えられますが、その場合は VDC を「検証済み」と呼べません。証跡は `match-evidence` で、実行記録と SIEM/EDR のエクスポートを突き合わせて埋めます（[redteam_integration.md](redteam_integration.md)）。
 
 ### 3.2 指標
 
@@ -45,7 +45,7 @@ score_s(t) = (1 − β) × share_s(t) + β × p(t)
 |---|---|
 | d_p | 手順 p の最新の記録でアラートが出たら 1、出なければ 0（`--count-prevented` のときは防御も 1） |
 | f_p | 手順 p の最新の記録からの経過日数 a に対し、step なら a ≤ 窓（既定 90 日）で 1、それ以外は 0。exp なら 0.5^(a / 半減期) |
-| n_t | 検証計画があれば「計画した手順と、計画外に実施した手順」の数、なければ実施した手順の数 |
+| n_t | 検証計画があれば「計画した手順と、同じ演習で計画外に実施した手順」の数、なければ実施した手順の数。計画があるときは engagement_id が計画と同じ記録だけを使う |
 | V_t（鮮度込みの検知率） | (1/n_t) Σ_p d_p × f_p。未実施の計画手順は d = 0。VDC の計算に使う |
 | 実施率 | 計画した手順のうち実施した割合 |
 | D_t（検知率） | 実施した手順に対する Σ_p d_p の割合。鮮度を無視した値。回帰率の比較に使う |
@@ -71,7 +71,9 @@ score_s(t) = (1 − β) × share_s(t) + β × p(t)
 - 重み：負数、NaN、無限大、数値でない値、technique_id の重複はエラー。合計が正でなければエラー。読み込み後に合計 1 に正規化する。`compute` に直接渡す重みも、合計が 1 でなければエラー。
 - 検証記録：outcome は 4 値のいずれか、真偽値の列は true/false/yes/no/1/0 のいずれか（空欄は既定値）。
 - 鮮度：窓は 0 以上、半減期は正の値（`--half-life 0` はエラー）。モードは step か exp。
-- 検証計画：technique_id と procedure_id の組の重複はエラー。
+- 検証計画：technique_id と procedure_id の組の重複はエラー。engagement_id、plan_id、plan_version の列が必須で、全行で同じ値。
+- 検証日時：tested_at は UTC オフセット必須。tested_on と両方あれば、tested_on は tested_at の UTC の日付。同じ手順・同じ日の記録で順序が決まらなければエラー。
+- 照合結果：match_status は confirmed／ambiguous／none のいずれか（空欄可）。
 
 ## 4. データの質の評価
 

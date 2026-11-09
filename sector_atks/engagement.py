@@ -6,6 +6,12 @@ Atomic Red Team) inside the scope and window written down here. This module
 checks that the written authorisation is complete and reads the plan of
 procedures to be tested, so that coverage can be measured against what was
 planned rather than only against what happened to be run.
+
+The RoE check is static: it confirms that the document is complete and that
+recorded runs fall inside its scope and window *after the fact*. It does not
+stop anything while an engagement is running. Runtime control (kill switch,
+stop conditions, scope enforcement) belongs to the execution tooling and the
+people named in the RoE.
 """
 
 from __future__ import annotations
@@ -109,14 +115,40 @@ class PlannedProcedure:
     technique_id: str
     procedure_id: str
     reference: str  # e.g. ctid-micro:ad_enum, atomic:<guid>, internal:<id>
+    engagement_id: str = ""
+    plan_id: str = ""
+    plan_version: str = ""
+
+
+PLAN_IDENTITY = ("engagement_id", "plan_id", "plan_version")
+
+
+def plan_identity(plan: list[PlannedProcedure]) -> tuple[str, str, str]:
+    """(engagement_id, plan_id, plan_version) shared by every row of the plan.
+
+    A plan belongs to exactly one engagement and one version, so that records
+    from earlier engagements cannot be counted as executing it."""
+    ids = {(p.engagement_id, p.plan_id, p.plan_version) for p in plan}
+    if len(ids) != 1:
+        raise ValueError(f"a plan must have one engagement_id/plan_id/plan_version, got {sorted(ids)}")
+    (ident,) = ids
+    missing = [name for name, value in zip(PLAN_IDENTITY, ident) if not value]
+    if missing:
+        raise ValueError(f"plan is missing {', '.join(missing)}")
+    return ident
 
 
 def load_plan(path: Path) -> list[PlannedProcedure]:
-    """Read scenario_id, step, technique_id, procedure_id, reference.
-    A (technique_id, procedure_id) pair may appear only once."""
+    """Read engagement_id, plan_id, plan_version, scenario_id, step, technique_id,
+    procedure_id, reference. A (technique_id, procedure_id) pair may appear only
+    once, and every row must carry the same engagement_id, plan_id and plan_version."""
     out, seen = [], set()
     with open(path, encoding="utf-8", newline="") as f:
-        for i, r in enumerate(csv.DictReader(f), start=2):
+        reader = csv.DictReader(f)
+        missing = [c for c in PLAN_IDENTITY if c not in (reader.fieldnames or [])]
+        if missing:
+            raise ValueError(f"{path}: plan needs the columns {', '.join(missing)}")
+        for i, r in enumerate(reader, start=2):
             key = (r["technique_id"].strip(), r["procedure_id"].strip())
             if not all(key):
                 raise ValueError(f"{path}:{i}: technique_id and procedure_id are required")
@@ -125,11 +157,20 @@ def load_plan(path: Path) -> list[PlannedProcedure]:
             seen.add(key)
             out.append(
                 PlannedProcedure(
-                    r.get("scenario_id", "").strip(),
+                    (r.get("scenario_id") or "").strip(),
                     int(r.get("step") or 0),
                     key[0],
                     key[1],
                     (r.get("reference") or "").strip(),
+                    r["engagement_id"].strip(),
+                    r["plan_id"].strip(),
+                    r["plan_version"].strip(),
                 )
             )
+    if not out:
+        raise ValueError(f"{path}: plan has no procedures")
+    try:
+        plan_identity(out)
+    except ValueError as e:
+        raise ValueError(f"{path}: {e}") from None
     return out

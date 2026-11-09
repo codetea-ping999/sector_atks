@@ -149,8 +149,10 @@ def cmd_check_roe(args: argparse.Namespace) -> None:
     problems = engagement.check_roe(data)
     if problems:
         raise ValueError("incomplete rules of engagement:\n  " + "\n  ".join(problems))
-    print(f"OK: {data['engagement_id']} ({data['environment']}, "
+    print(f"OK (static check): {data['engagement_id']} ({data['environment']}, "
           f"{len(data['scope']['hosts'])} hosts, {data['window']['start']} - {data['window']['end']})")
+    print("This checks the document only. Stopping out-of-scope activity while the engagement "
+          "runs is the job of the execution tooling and the people named in the RoE.")
 
 
 def cmd_match_evidence(args: argparse.Namespace) -> None:
@@ -162,16 +164,40 @@ def cmd_match_evidence(args: argparse.Namespace) -> None:
         roe=roe,
         verifier=args.verifier,
         grace_seconds=args.grace,
+        plan=engagement.load_plan(Path(args.plan)) if args.plan else None,
     )
-    evidence.write_validations(result.rows, Path(args.output))
-    print(f"{len(result.rows)} runs matched -> {args.output}")
+    out = Path(args.output)
+    status_path = Path(args.status) if args.status else out.with_name(out.stem + ".status.json")
+    status = result.status
+    written = not result.rejected or args.allow_partial
+    if result.rejected and args.allow_partial:
+        status = "partial"
+    vdc.write_json({
+        "status": status,
+        "engagement_id": roe.engagement_id,
+        "output": str(out) if written else None,
+        "runs_written": len(result.rows) if written else 0,
+        "rejected": [{"run_id": r, "reason": why} for r, why in result.rejected],
+        "ambiguous_runs": result.ambiguous,
+        "contested_events": result.contested_events,
+        "unmatched_alerts": result.unmatched_alerts,
+    }, status_path)
     for run_id, reason in result.rejected:
         print(f"rejected {run_id}: {reason}", file=sys.stderr)
+    if result.rejected and not args.allow_partial:
+        raise ValueError(
+            f"{len(result.rejected)} runs were outside the rules of engagement; "
+            f"{out} was not written (status: {status_path}). "
+            "Fix the runs, or pass --allow-partial to write the in-scope runs marked as partial"
+        )
+    evidence.write_validations(result.rows, out)
+    print(f"status: {status}  {len(result.rows)} runs -> {out}  (details: {status_path})")
+    if result.ambiguous:
+        print(f"{len(result.ambiguous)} runs need review (contested or untagged alerts): "
+              f"{', '.join(result.ambiguous)}")
     if result.unmatched_alerts:
         print(f"{len(result.unmatched_alerts)} alerts did not match any run "
               f"(first: {', '.join(result.unmatched_alerts[:5])})")
-    if result.rejected:
-        raise ValueError(f"{len(result.rejected)} runs were outside the rules of engagement")
 
 
 def _read_catalog(path: Path) -> list[dict]:
@@ -255,7 +281,7 @@ def build_parser() -> argparse.ArgumentParser:
     v.add_argument("--attack-version", default="", help="ATT&CK version for the layer")
     v.set_defaults(func=cmd_vdc)
 
-    r = sub.add_parser("check-roe", help="check that rules of engagement are complete")
+    r = sub.add_parser("check-roe", help="static check that rules of engagement are complete")
     r.add_argument("roe", help="RoE JSON file")
     r.set_defaults(func=cmd_check_roe)
 
@@ -266,6 +292,10 @@ def build_parser() -> argparse.ArgumentParser:
     m.add_argument("--logs", help="optional telemetry export for visibility")
     m.add_argument("--verifier", required=True, help="who reviewed the matches")
     m.add_argument("--grace", type=int, default=300, help="seconds after a run to accept events")
+    m.add_argument("--plan", help="test plan; rows get its engagement_id, plan_id and plan_version")
+    m.add_argument("--allow-partial", action="store_true",
+                   help="write in-scope runs even when some were rejected (status: partial)")
+    m.add_argument("--status", help="status JSON (default: <output>.status.json)")
     m.add_argument("-o", "--output", default="out/validations.csv")
     m.set_defaults(func=cmd_match_evidence)
 

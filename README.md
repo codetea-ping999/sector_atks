@@ -56,8 +56,10 @@ python3 -m sector_atks vdc \
 python3 -m sector_atks check-roe examples/lab_engagement/roe.json
 python3 -m sector_atks match-evidence --roe examples/lab_engagement/roe.json \
   --runs examples/lab_engagement/runs.csv --alerts examples/lab_engagement/alerts.csv \
-  --logs examples/lab_engagement/logs.csv --verifier blue-lead -o out/lab_validations.csv
-#   （例では範囲外ホストの実行 R-006 を除外して終了コード 1 を返す）
+  --logs examples/lab_engagement/logs.csv --plan examples/lab_engagement/plan.csv \
+  --verifier blue-lead -o out/lab_validations.csv --allow-partial
+#   例には範囲外ホストの実行 R-006 がある。--allow-partial がないと出力を書かずに終了コード 1。
+#   付けると範囲内の 5 件だけを書き、状態ファイル out/lab_validations.status.json に partial と残す
 python3 -m sector_atks vdc --weights examples/lab_engagement/weights.csv \
   --validations out/lab_validations.csv --plan examples/lab_engagement/plan.csv --as-of 2026-11-07
 
@@ -79,7 +81,7 @@ python3 -m sector_atks build-weights --stix cache/enterprise-attack.json \
 - 優先度順の技術一覧（残り = w × (1 − V) の大きい順。どこから直すと VDC が最も上がるか）
 - `--layer` で ATT&CK Navigator のレイヤー（スコア = V）
 
-既定では、証跡（event_id か evidence_uri）と確認者（verifier）のそろったアラートだけを検知に数えます。防御されたがアラートが出なかった結果も数えるには `--count-prevented` を、自己申告の結果も数えるには `--allow-unverified` を付けます。検証計画（`--plan`）を渡すと、未実施の計画手順を未検知として数えます。
+既定では、証跡（event_id か evidence_uri）と確認者（verifier）のそろったアラートだけを検知に数えます。照合が曖昧（`match_status=ambiguous`）な記録は数えません。防御されたがアラートが出なかった結果も数えるには `--count-prevented` を、自己申告の結果も数えるには `--allow-unverified` を付けます。検証計画（`--plan`）を渡すと、計画と同じ演習（engagement_id）の記録だけを使い、未実施の計画手順を未検知として数えます。防御率とログ率は「証跡あり」と「記録上の値」の両方を表示します。
 
 ### 入力ファイルの形式
 
@@ -89,11 +91,15 @@ python3 -m sector_atks build-weights --stix cache/enterprise-attack.json \
 |---|---|
 | technique_id | ATT&CK 技術 ID。サブ技術（T1059.001）は親技術に集計される |
 | procedure_id | 手順バリエーションの識別子（例：社内の試験 ID。手順の中身は書かない） |
-| tested_on | 検証日（YYYY-MM-DD） |
+| tested_on | 検証日（YYYY-MM-DD、UTC） |
+| tested_at | 検証日時（ISO 8601、UTC オフセット必須）。同じ手順を同じ日に複数回試したときは必須。tested_on は tested_at の UTC の日付と一致すること |
 | outcome | `prevented`（防御された）／`detected`（検知された）／`logged`（ログのみ）／`none`（ログなし） |
 | notes | 任意のメモ |
 | prevented, alerted, logged | 任意。`true`／`false`。防御・アラート・ログの有無を個別に記録する。空欄なら outcome から決まる |
 | run_id, rule_id, event_id, evidence_uri, verifier | 証跡。`match-evidence` が埋める。event_id か evidence_uri と、verifier がないと検知に数えない |
+| engagement_id, plan_id, plan_version | 演習と計画の識別子。`--plan` を使うときは engagement_id が計画と一致する記録だけを数える |
+| match_status, log_event_id, candidate_event_id | 照合の結果（confirmed／ambiguous／none）、ログの ID、人の確認待ちのイベント ID |
+| prevention_claimed | レッドチームの防御の申告。証跡としては使わない |
 
 outcome から決まる既定値は次のとおりです。`prevented` はアラートもログも「なし」として扱うので、実際にあった場合は列で明示してください。
 
