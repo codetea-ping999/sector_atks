@@ -29,6 +29,23 @@ jobs:
             --claimed examples/fictional_org/claimed.csv \
             --as-of 2026-10-26 --previous-as-of 2026-08-31 --json out/report.json
           python -c "import json; v = json.load(open('out/report.json'))['vdc']; assert abs(v - 0.5) < 1e-9, v"
+      - name: Lab engagement pipeline (RoE, evidence matching, plan)
+        run: |
+          python -m sector_atks check-roe examples/lab_engagement/roe.json
+          if python -m sector_atks match-evidence --roe examples/lab_engagement/roe.json \
+               --runs examples/lab_engagement/runs.csv --alerts examples/lab_engagement/alerts.csv \
+               --verifier ci -o out/lab.csv; then
+            echo "expected a refusal: R-006 is outside the RoE"; exit 1
+          fi
+          test ! -e out/lab.csv
+          python -m sector_atks match-evidence --roe examples/lab_engagement/roe.json \
+            --runs examples/lab_engagement/runs.csv --alerts examples/lab_engagement/alerts.csv \
+            --logs examples/lab_engagement/logs.csv --plan examples/lab_engagement/plan.csv \
+            --verifier ci -o out/lab.csv --allow-partial
+          python -m sector_atks vdc --weights examples/lab_engagement/weights.csv \
+            --validations out/lab.csv --plan examples/lab_engagement/plan.csv \
+            --as-of 2026-11-07 --json out/lab_report.json
+          python -c "import json; r = json.load(open('out/lab_report.json')); assert abs(r['vdc'] - 0.4/3 - 0.4) < 1e-9, r['vdc']; assert json.load(open('out/lab.status.json'))['status'] == 'partial'"
       - name: Shipped weight files are valid
         run: |
           python - <<'PY'
