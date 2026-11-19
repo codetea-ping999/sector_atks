@@ -168,6 +168,41 @@ class MatchTest(unittest.TestCase):
         self.assertEqual([r for r, _ in result.rejected], ["R1", "R2"])
         self.assertEqual(result.status, "rejected")
 
+    # --- regression tests for the Codex review of PR #2 --------------------------------
+
+    def test_log_with_same_id_does_not_resolve_a_contested_alert(self):
+        runs = [self.run_(), self.run_(run_id="R2", procedure_id="b",
+                                       started_at=T("2026-11-03T01:03:00Z"),
+                                       ended_at=T("2026-11-03T01:06:00Z")),
+                self.run_(run_id="R3", procedure_id="c", host="lab-ws02")]
+        log = evidence.Event("A1", T("2026-11-03T01:02:00Z"), "lab-ws02")  # same ID, fits R3 only
+        result = evidence.match(runs, [self.alert("2026-11-03T01:04:00Z")], logs=[log], verifier="v")
+        by_run = {r["run_id"]: r for r in result.rows}
+        for rid in ("R1", "R2"):
+            self.assertEqual((by_run[rid]["match_status"], by_run[rid]["alerted"]), ("ambiguous", "false"))
+        self.assertEqual(by_run["R3"]["log_event_id"], "A1")
+
+    def test_rejected_run_still_competes_for_an_alert(self):
+        roe = engagement.load_roe(LAB / "roe.json")
+        inside = self.run_(started_at=T("2026-11-06T23:50:00Z"), ended_at=T("2026-11-06T23:55:00Z"))
+        outside = self.run_(run_id="R2", procedure_id="b", started_at=T("2026-11-06T23:54:00Z"),
+                            ended_at=T("2026-11-07T00:10:00Z"))
+        result = evidence.match([inside, outside], [self.alert("2026-11-06T23:56:00Z")], roe=roe,
+                                verifier="v")
+        self.assertEqual([r for r, _ in result.rejected], ["R2"])
+        row = result.rows[0]
+        self.assertEqual((row["run_id"], row["match_status"], row["alerted"]), ("R1", "ambiguous", "false"))
+
+    def test_roe_hosts_are_case_insensitive(self):
+        data = json.loads((LAB / "roe.json").read_text(encoding="utf-8"))
+        data["scope"]["hosts"] = ["LAB-WS01"]
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "roe.json"
+            path.write_text(json.dumps(data))
+            roe = engagement.load_roe(path)
+        result = evidence.match([self.run_()], [], roe=roe)
+        self.assertEqual((result.rejected, len(result.rows)), ([], 1))
+
     def test_naive_timestamps_are_rejected(self):
         with self.assertRaises(ValueError):
             T("2026-11-03T01:00:00")

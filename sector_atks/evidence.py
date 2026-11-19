@@ -202,10 +202,15 @@ def match(
         else:
             accepted.append(run)
 
-    alert_c, alert_fits = _candidates(alerts, accepted, grace, alerts=True)
-    log_c, log_fits = _candidates(logs or [], accepted, grace, alerts=False)
-    contested = {eid for eid, rs in {**alert_fits, **log_fits}.items() if len(rs) > 1}
-    result.contested_events = sorted(contested)
+    # Match events against every recorded run, not only the accepted ones: a
+    # rejected run is still a competing explanation for an event it overlaps.
+    # Alerts and logs keep separate identities, since exports may reuse IDs.
+    all_runs = sorted(runs, key=lambda r: (r.started_at, r.run_id))
+    alert_c, alert_fits = _candidates(alerts, all_runs, grace, alerts=True)
+    log_c, log_fits = _candidates(logs or [], all_runs, grace, alerts=False)
+    contested = {eid for eid, rs in alert_fits.items() if len(rs) > 1}
+    log_contested = {eid for eid, rs in log_fits.items() if len(rs) > 1}
+    result.contested_events = sorted(contested | log_contested)
     used: set[str] = set()
 
     for run in accepted:
@@ -214,7 +219,7 @@ def match(
         confirmed = by_time(exact + [e for e in window if e.event_id not in contested and e.technique_ids])
         doubtful = by_time([e for e in window if e.event_id in contested or not e.technique_ids])
         log_exact, log_window = log_c[run.run_id]
-        seen = by_time(log_exact + [e for e in log_window if e.event_id not in contested])
+        seen = by_time(log_exact + [e for e in log_window if e.event_id not in log_contested])
         used.update(e.event_id for e in confirmed + doubtful)
 
         alert_events = [e for e in confirmed if not e.blocked]

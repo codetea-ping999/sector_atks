@@ -365,6 +365,8 @@ def _claimed(v: Validation, counts_prevented: bool) -> bool:
 
 
 def _hit(v: Validation, counts_prevented: bool, requires_evidence: bool = True) -> bool:
+    if v.ambiguous:  # an unresolved match never counts, even with --allow-unverified
+        return False
     return _claimed(v, counts_prevented) and (v.has_evidence() or not requires_evidence)
 
 
@@ -468,7 +470,6 @@ def compute(
     """
     check_weights(weights)
     freshness(0, mode, window, half_life)  # validate parameters even with no records
-    check_order(validations)
     planned: dict[str, set] | None = None
     ident = ("", "", "")
     excluded = 0
@@ -488,6 +489,9 @@ def compute(
             t = _resolve(p.technique_id, weights)
             if t:
                 planned.setdefault(t, set()).add((p.technique_id, p.procedure_id))
+    # Check ordering only on the records that are scored, so excluded history
+    # from other engagements or plan versions cannot block a valid report.
+    check_order(validations)
 
     opts = dict(mode=mode, window=window, half_life=half_life, counts_prevented=counts_prevented,
                 requires_evidence=requires_evidence, planned=planned)

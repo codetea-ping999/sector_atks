@@ -59,7 +59,7 @@ class Roe:
     raw: dict = field(repr=False, default_factory=dict)
 
     def in_scope(self, host: str) -> bool:
-        return host in self.hosts
+        return host.strip().lower() in self.hosts
 
     def in_window(self, t: datetime) -> bool:
         return self.start <= t <= self.end
@@ -101,7 +101,7 @@ def load_roe(path: Path) -> Roe:
     return Roe(
         engagement_id=data["engagement_id"],
         environment=data["environment"],
-        hosts=set(data["scope"]["hosts"]),
+        hosts={h.strip().lower() for h in data["scope"]["hosts"]},
         start=parse_time(data["window"]["start"]),
         end=parse_time(data["window"]["end"]),
         raw=data,

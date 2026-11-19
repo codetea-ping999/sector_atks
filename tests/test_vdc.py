@@ -282,6 +282,20 @@ class ReviewRegressionTest(unittest.TestCase):
         r = vdc.compute(self.weights, [v], self.as_of)
         self.assertEqual((r.vdc, r.ambiguous, r.unverified), (0.0, 1, 0))
 
+    def test_ambiguous_match_is_not_counted_even_without_required_evidence(self):
+        v = V("T1059", "a", date(2026, 11, 3), "detected", match_status="ambiguous")
+        r = vdc.compute(self.weights, [v], self.as_of, requires_evidence=False)
+        self.assertEqual((r.vdc, r.ambiguous), (0.0, 1))
+
+    def test_excluded_history_does_not_block_ordering(self):
+        plan = [P("T1059", "a", engagement_id="E2")]
+        mine = V("T1059", "a", date(2026, 11, 3), "detected", engagement_id="E2")
+        other = V("T1059", "a", date(2026, 11, 3), "none", engagement_id="E1")
+        r = vdc.compute(self.weights, [mine, other], self.as_of, plan=plan)
+        self.assertEqual((r.vdc, r.excluded_records), (0.5, 1))
+        with self.assertRaisesRegex(ValueError, "tested_at"):
+            vdc.compute(self.weights, [mine, other], self.as_of)
+
     def test_past_engagement_records_do_not_execute_a_new_plan(self):
         plan = [P("T1059", p, engagement_id="E2", plan_id="P2") for p in ("a", "b")]
         old = [V("T1059", "a", date(2026, 10, 1), "detected", engagement_id="E1"),
