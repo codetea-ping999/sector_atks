@@ -182,6 +182,17 @@ class MatchTest(unittest.TestCase):
             self.assertEqual((by_run[rid]["match_status"], by_run[rid]["alerted"]), ("ambiguous", "false"))
         self.assertEqual(by_run["R3"]["log_event_id"], "A1")
 
+    def test_contested_log_is_kept_for_review(self):
+        runs = [self.run_(), self.run_(run_id="R2", procedure_id="b",
+                                       started_at=T("2026-11-03T01:03:00Z"),
+                                       ended_at=T("2026-11-03T01:06:00Z"))]
+        log = evidence.Event("L1", T("2026-11-03T01:04:00Z"), "lab-ws01")
+        result = evidence.match(runs, [], logs=[log], verifier="v")
+        self.assertEqual(result.status, "needs_review")
+        for row in result.rows:
+            self.assertEqual((row["match_status"], row["logged"], row["candidate_event_id"]),
+                             ("ambiguous", "false", "L1"))
+
     def test_rejected_run_still_competes_for_an_alert(self):
         roe = engagement.load_roe(LAB / "roe.json")
         inside = self.run_(started_at=T("2026-11-06T23:50:00Z"), ended_at=T("2026-11-06T23:55:00Z"))

@@ -220,13 +220,17 @@ def match(
         doubtful = by_time([e for e in window if e.event_id in contested or not e.technique_ids])
         log_exact, log_window = log_c[run.run_id]
         seen = by_time(log_exact + [e for e in log_window if e.event_id not in log_contested])
+        log_doubtful = by_time([e for e in log_window if e.event_id in log_contested])
         used.update(e.event_id for e in confirmed + doubtful)
 
         alert_events = [e for e in confirmed if not e.blocked]
         block_events = [e for e in confirmed if e.blocked]
         alerted, prevented = bool(alert_events), bool(block_events)
         logged = bool(alert_events or seen)
-        status = "confirmed" if confirmed else "ambiguous" if doubtful else "none"
+        # A contested log is the only sign of visibility: keep it for human review
+        # instead of reporting the run as having no telemetry.
+        status = ("confirmed" if confirmed
+                  else "ambiguous" if doubtful or (log_doubtful and not seen) else "none")
         if status == "ambiguous":
             result.ambiguous.append(run.run_id)
         outcome = ("detected" if alerted else "prevented" if prevented
@@ -234,6 +238,8 @@ def match(
         notes = []
         if doubtful:
             notes.append(f"{len(doubtful)} contested or untagged event(s) need review")
+        if log_doubtful:
+            notes.append(f"{len(log_doubtful)} contested log event(s) need review")
         if run.prevention_claimed and not prevented:
             notes.append("prevention claimed by the red team but no blocking event found")
         if plan is not None and (run.technique_id, run.procedure_id) not in planned:
@@ -257,7 +263,7 @@ def match(
             "event_id": ";".join(e.event_id for e in confirmed),
             "evidence_uri": ";".join(e.uri for e in confirmed if e.uri),
             "log_event_id": ";".join(e.event_id for e in seen),
-            "candidate_event_id": ";".join(e.event_id for e in doubtful),
+            "candidate_event_id": ";".join(e.event_id for e in doubtful + log_doubtful),
             "verifier": verifier if (confirmed or seen) else "",
             "notes": "; ".join(notes),
         })
