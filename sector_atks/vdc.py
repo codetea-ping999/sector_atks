@@ -408,8 +408,11 @@ def _technique_results(
         fresh = [freshness((as_of - v.tested_on).days, mode, window, half_life) for v in procs]
         hits = [_hit(v, counts_prevented, requires_evidence) for v in procs]
         flags = [v.flags() for v in procs]
-        prevented_ok = [f[0] and (v.has_evidence() or not requires_evidence) for v, f in zip(procs, flags)]
-        logged_ok = [f[2] and (v.has_log_evidence() or not requires_evidence) for v, f in zip(procs, flags)]
+        # Unresolved (ambiguous) matches never count, even with --allow-unverified.
+        prevented_ok = [not v.ambiguous and f[0] and (v.has_evidence() or not requires_evidence)
+                        for v, f in zip(procs, flags)]
+        logged_ok = [not v.ambiguous and f[2] and (v.has_log_evidence() or not requires_evidence)
+                     for v, f in zip(procs, flags)]
         k = len(procs)
         detected = sum(hits)
         verified = sum(f for f, h in zip(fresh, hits) if h) / n if n else 0.0
@@ -536,9 +539,12 @@ def compute(
         report.prevention_rate_claimed = sum(r.prevention_rate_claimed * r.procedures
                                              for r in results) / tested
         report.log_rate_claimed = sum(r.log_rate_claimed * r.procedures for r in results) / tested
-    if planned is not None:
-        total = sum(r.planned or 0 for r in results)
-        report.execution_rate = sum(r.executed_planned for r in results) / total if total else 0.0
+    if plan is not None:
+        # Execution covers the whole plan, including techniques outside the weight set;
+        # VDC itself stays restricted to weighted techniques.
+        plan_keys = {(p.technique_id, p.procedure_id) for p in plan}
+        executed = {(v.technique_id, v.procedure_id) for v in validations if v.tested_on <= as_of}
+        report.execution_rate = len(plan_keys & executed) / len(plan_keys) if plan_keys else 0.0
 
     if claimed is not None:
         report.claimed_coverage = sum(r.has_rule for r in results) / len(results)

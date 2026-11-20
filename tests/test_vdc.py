@@ -287,6 +287,19 @@ class ReviewRegressionTest(unittest.TestCase):
         r = vdc.compute(self.weights, [v], self.as_of, requires_evidence=False)
         self.assertEqual((r.vdc, r.ambiguous), (0.0, 1))
 
+    def test_ambiguous_match_does_not_count_for_prevention_or_logging(self):
+        v = V("T1059", "a", date(2026, 11, 3), "prevented", match_status="ambiguous",
+              logged=True)
+        r = vdc.compute(self.weights, [v], self.as_of, requires_evidence=False, counts_prevented=True)
+        self.assertEqual((r.vdc, r.prevention_rate, r.log_rate), (0.0, 0.0, 0.0))
+
+    def test_execution_rate_covers_unweighted_plan_procedures(self):
+        plan = [P("T1059", "a"), P("T1087", "b")]
+        r = vdc.compute({"T1059": ("x", 1.0)}, [V("T1059", "a", date(2026, 11, 3), "detected")],
+                        self.as_of, plan=plan)
+        self.assertAlmostEqual(r.execution_rate, 0.5)
+        self.assertAlmostEqual(r.vdc, 1.0)
+
     def test_excluded_history_does_not_block_ordering(self):
         plan = [P("T1059", "a", engagement_id="E2")]
         mine = V("T1059", "a", date(2026, 11, 3), "detected", engagement_id="E2")
