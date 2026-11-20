@@ -134,8 +134,9 @@ def victimology(description: str) -> list[str]:
     return spans
 
 
-def tag_group(group: Group) -> list[SectorTag]:
-    spans = victimology(group.description)
+def tag_group(group: Group, strict: bool = True) -> list[SectorTag]:
+    """strict=False searches the whole description; used only as a sensitivity check."""
+    spans = victimology(group.description) if strict else [_clean(group.description)]
     tags = []
     for sector, pattern in _COMPILED.items():
         for span in spans:
@@ -164,9 +165,10 @@ def load_overrides(path: Path) -> list[tuple[str, str, str]]:
 
 
 def tag_groups(
-    groups: dict[str, Group], overrides: list[tuple[str, str, str]] | None = None
+    groups: dict[str, Group], overrides: list[tuple[str, str, str]] | None = None,
+    strict: bool = True,
 ) -> list[SectorTag]:
-    tags = {(t.group_id, t.sector): t for g in groups.values() for t in tag_group(g)}
+    tags = {(t.group_id, t.sector): t for g in groups.values() for t in tag_group(g, strict)}
     for gid, sector, action in overrides or []:
         if action == "remove":
             tags.pop((gid, sector), None)

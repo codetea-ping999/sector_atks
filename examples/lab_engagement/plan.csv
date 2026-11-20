@@ -1,0 +1,7 @@
+engagement_id,plan_id,plan_version,scenario_id,step,technique_id,procedure_id,reference
+LAB-2026-11,FIN-PLAN,1,FIN-1,1,T1059,variant-1,internal:exec-01
+LAB-2026-11,FIN-PLAN,1,FIN-1,1,T1059,variant-2,internal:exec-02
+LAB-2026-11,FIN-PLAN,1,FIN-1,1,T1059,variant-3,internal:exec-03
+LAB-2026-11,FIN-PLAN,1,FIN-1,2,T1087,ad-enum,ctid-micro:ad_enum
+LAB-2026-11,FIN-PLAN,1,FIN-1,3,T1003,process-access,ctid-micro:process_injection
+LAB-2026-11,FIN-PLAN,1,FIN-1,4,T1070,log-clear,ctid-micro:log_clearing

@@ -1,0 +1,5 @@
+technique_id,name,weight
+T1059,Command and Scripting Interpreter,0.4
+T1087,Account Discovery,0.2
+T1003,OS Credential Dumping,0.2
+T1070,Indicator Removal,0.2
